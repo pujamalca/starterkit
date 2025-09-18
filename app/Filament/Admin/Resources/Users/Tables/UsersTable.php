@@ -2,7 +2,6 @@
 
 namespace App\Filament\Admin\Resources\Users\Tables;
 
-use App\Filament\Exports\UserExporter;
 use App\Filament\Exports\UsersExport;
 use App\Filament\Imports\UsersImport;
 use Filament\Actions\BulkActionGroup;
@@ -10,9 +9,9 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
+use Filament\Actions\ImportAction;
 use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\ImportAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
@@ -55,7 +54,7 @@ class UsersTable
                 ImportAction::make()
                     ->importer(UsersImport::class),
                 ExportAction::make()
-                    ->exporter(UserExporter::class)
+                    ->exporter(UsersExport::class)
                     ->formats([
                         ExportFormat::Xlsx,
                         ExportFormat::Csv,

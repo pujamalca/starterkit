@@ -8,7 +8,7 @@ use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
 use Illuminate\Support\Number;
 
-class UserExporter extends Exporter
+class UsersExport extends Exporter
 {
     protected static ?string $model = User::class;
 

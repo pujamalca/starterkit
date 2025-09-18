@@ -7,6 +7,7 @@ use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class UsersImport extends Importer
 {
@@ -28,30 +29,44 @@ class UsersImport extends Importer
                 ->rules(['nullable', 'date']),
             ImportColumn::make('password')
                 ->label('Password')
-                ->rules(['nullable', 'min:8']),
+                ->rules(['nullable', 'min:8'])
+                ->example('password123'),
         ];
     }
 
     public function resolveRecord(): ?User
     {
-        $user = new User();
+        $data = $this->data;
 
-        // Hash password jika ada
-        if (!empty($this->data['password'])) {
-            $this->data['password'] = Hash::make($this->data['password']);
+        // Set default password if not provided
+        if (empty($data['password'])) {
+            $data['password'] = 'password123';
         }
 
-        return $user;
+        // Create new user (validation will catch duplicates)
+        return new User($data);
     }
 
     public static function getCompletedNotificationBody(Import $import): string
     {
-        $body = 'Your users import has completed and ' . number_format($import->successful_rows) . ' ' . str('row')->plural($import->successful_rows) . ' imported.';
+        $successfulRows = $import->successful_rows;
+        $failedRowsCount = $import->getFailedRowsCount();
+        $totalRows = $import->total_rows;
 
-        if ($failedRowsCount = $import->getFailedRowsCount()) {
-            $body .= ' ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to import.';
+        if ($failedRowsCount > 0) {
+            $body = 'Import completed with issues: ' . number_format($successfulRows) . ' ' . str('user')->plural($successfulRows) . ' imported successfully.';
+            $body .= ' ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed (duplicate emails or validation errors).';
+        } else {
+            $body = 'Import completed successfully: ' . number_format($successfulRows) . ' ' . str('user')->plural($successfulRows) . ' imported.';
         }
 
         return $body;
+    }
+
+    public static function getFailedNotificationBody(Import $import): string
+    {
+        $failedRowsCount = $import->getFailedRowsCount();
+
+        return 'Import failed: ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' could not be imported due to validation errors (duplicate emails, invalid data, etc.).';
     }
 }
