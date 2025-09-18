@@ -44,24 +44,24 @@
 /* Match Filament's exact dark theme colors */
 .dark .fi-page-card,
 html[class~="dark"] .fi-page-card {
-    background-color: rgb(15 23 42) !important; /* slate-900 - Filament's card bg */
-    border-color: rgb(30 41 59) !important; /* slate-800 - Filament's border */
+    background-color: rgb(48, 46, 46) !important; /* slate-900 - Filament's card bg */
+    border-color: rgb(12, 16, 24) !important; /* slate-800 - Filament's border */
 }
 
 .dark .fi-page-card-header,
 html[class~="dark"] .fi-page-card-header {
-    background-color: rgb(30 41 59) !important; /* slate-800 - Filament's header bg */
-    border-color: rgb(51 65 85) !important; /* slate-700 - Filament's border */
+    background-color: rgb(17, 17, 17) !important; /* slate-800 - Filament's header bg */
+    border-color: rgb(17, 17, 17) !important; /* slate-700 - Filament's border */
 }
 
 .dark .fi-page-card-body,
 html[class~="dark"] .fi-page-card-body {
-    background-color: rgb(15 23 42) !important; /* slate-900 - Filament's body bg */
+    background-color: rgb(17, 17, 17) !important; /* slate-900 - Filament's body bg */
 }
 
 .dark .fi-info-item,
 html[class~="dark"] .fi-info-item {
-    background-color: rgb(30 41 59) !important; /* slate-800 - Filament's item bg */
+    background-color: rgb(17, 17, 17)!important; /* slate-800 - Filament's item bg */
     border-color: rgb(51 65 85) !important; /* slate-700 - Filament's border */
 }
 
@@ -72,7 +72,7 @@ html[class~="dark"] .fi-page-card-title {
 
 .dark .fi-info-label,
 html[class~="dark"] .fi-info-label {
-    color: rgb(148 163 184) !important; /* slate-400 - Filament's secondary text */
+    color: rgb(196, 205, 218) !important; /* slate-400 - Filament's secondary text */
 }
 
 .dark .fi-info-value,
