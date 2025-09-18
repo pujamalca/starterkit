@@ -56,14 +56,6 @@ class UsersTable
                     ->importer(UsersImport::class),
                 ExportAction::make()
                     ->exporter(UserExporter::class)
-                     ->formats([
-                        ExportFormat::Csv,
-                    ])
-                    // or
-                    ->formats([
-                        ExportFormat::Xlsx,
-                    ])
-                    // or
                     ->formats([
                         ExportFormat::Xlsx,
                         ExportFormat::Csv,

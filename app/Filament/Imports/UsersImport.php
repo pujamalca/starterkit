@@ -28,21 +28,20 @@ class UsersImport extends Importer
                 ->rules(['nullable', 'date']),
             ImportColumn::make('password')
                 ->label('Password')
-                ->rules(['nullable', 'min:8'])
-                ->mutateBeforeCreate(function (string $value): string {
-                    return Hash::make($value);
-                }),
+                ->rules(['nullable', 'min:8']),
         ];
     }
 
     public function resolveRecord(): ?User
     {
-        // return User::firstOrNew([
-        //     // Update existing records, matching them by `$this->data['column_name']`
-        //     'email' => $this->data['email'],
-        // ]);
+        $user = new User();
 
-        return new User();
+        // Hash password jika ada
+        if (!empty($this->data['password'])) {
+            $this->data['password'] = Hash::make($this->data['password']);
+        }
+
+        return $user;
     }
 
     public static function getCompletedNotificationBody(Import $import): string
