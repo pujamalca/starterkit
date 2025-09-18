@@ -1,0 +1,98 @@
+@import 'tailwindcss';
+
+/* Custom CSS for Filament pages */
+@source 'vendor/filament/**/*.blade.php';
+@source 'vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source 'storage/framework/views/*.php';
+@source 'resources/views/**/*.blade.php';
+@source 'resources/js/**/*.js';
+@source 'app/Filament/**/*.php';
+
+/* Filament theme compatible styles */
+.fi-page-card {
+    @apply bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm;
+}
+
+.fi-page-card-header {
+    @apply px-6 py-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-xl;
+}
+
+.fi-page-card-title {
+    @apply text-lg font-semibold text-gray-900 dark:text-gray-100;
+}
+
+.fi-page-card-body {
+    @apply p-6 bg-white dark:bg-gray-900;
+}
+
+.fi-info-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+}
+
+.fi-info-item {
+    @apply p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700;
+}
+
+.fi-info-label {
+    @apply text-sm font-medium text-gray-600 dark:text-gray-400 mb-1;
+}
+
+.fi-info-value {
+    @apply text-base font-medium text-gray-900 dark:text-gray-100;
+}
+
+/* Match Filament's exact dark theme colors */
+.dark .fi-page-card,
+html[class~="dark"] .fi-page-card {
+    background-color: rgb(15 23 42) !important; /* slate-900 - Filament's card bg */
+    border-color: rgb(30 41 59) !important; /* slate-800 - Filament's border */
+}
+
+.dark .fi-page-card-header,
+html[class~="dark"] .fi-page-card-header {
+    background-color: rgb(30 41 59) !important; /* slate-800 - Filament's header bg */
+    border-color: rgb(51 65 85) !important; /* slate-700 - Filament's border */
+}
+
+.dark .fi-page-card-body,
+html[class~="dark"] .fi-page-card-body {
+    background-color: rgb(15 23 42) !important; /* slate-900 - Filament's body bg */
+}
+
+.dark .fi-info-item,
+html[class~="dark"] .fi-info-item {
+    background-color: rgb(30 41 59) !important; /* slate-800 - Filament's item bg */
+    border-color: rgb(51 65 85) !important; /* slate-700 - Filament's border */
+}
+
+.dark .fi-page-card-title,
+html[class~="dark"] .fi-page-card-title {
+    color: rgb(248 250 252) !important; /* slate-50 - Filament's primary text */
+}
+
+.dark .fi-info-label,
+html[class~="dark"] .fi-info-label {
+    color: rgb(148 163 184) !important; /* slate-400 - Filament's secondary text */
+}
+
+.dark .fi-info-value,
+html[class~="dark"] .fi-info-value {
+    color: rgb(226 232 240) !important; /* slate-200 - Filament's value text */
+}
+
+/* Status indicators */
+.fi-status-enabled {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+}
+
+.fi-status-disabled {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+}
+
+.fi-status-production {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200;
+}
+
+.fi-status-local {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200;
+}
