@@ -53,14 +53,18 @@ class UsersImport extends Importer
         $failedRowsCount = $import->getFailedRowsCount();
         $totalRows = $import->total_rows;
 
-        if ($failedRowsCount > 0) {
+        if ($successfulRows === 0 && $failedRowsCount > 0) {
+            // All rows failed
+            return 'Import failed completely: All ' . number_format($totalRows) . ' ' . str('row')->plural($totalRows) . ' failed to import due to validation errors (duplicate emails, invalid data, etc.).';
+        } elseif ($failedRowsCount > 0) {
+            // Partial success
             $body = 'Import completed with issues: ' . number_format($successfulRows) . ' ' . str('user')->plural($successfulRows) . ' imported successfully.';
             $body .= ' ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed (duplicate emails or validation errors).';
+            return $body;
         } else {
-            $body = 'Import completed successfully: ' . number_format($successfulRows) . ' ' . str('user')->plural($successfulRows) . ' imported.';
+            // Complete success
+            return 'Import completed successfully: ' . number_format($successfulRows) . ' ' . str('user')->plural($successfulRows) . ' imported.';
         }
-
-        return $body;
     }
 
     public static function getFailedNotificationBody(Import $import): string
