@@ -7,6 +7,7 @@ use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class UsersImport extends Importer
@@ -23,28 +24,43 @@ class UsersImport extends Importer
             ImportColumn::make('email')
                 ->label('Email Address')
                 ->requiredMapping()
-                ->rules(['required', 'email', 'max:255', 'unique:users,email']),
+                ->rules(['required', 'email', 'max:255']),
             ImportColumn::make('email_verified_at')
                 ->label('Email Verified At')
                 ->rules(['nullable', 'date']),
             ImportColumn::make('password')
                 ->label('Password')
-                ->rules(['nullable', 'min:8'])
-                ->example('password123'),
+                ->rules(['nullable'])
+                ->example('defaultpassword123'),
         ];
     }
 
+
     public function resolveRecord(): ?User
     {
+        Log::info('=== RESOLVE RECORD CALLED ===');
+        Log::info('Raw data received:', $this->data);
+
         $data = $this->data;
 
-        // Set default password if not provided
-        if (empty($data['password'])) {
-            $data['password'] = 'password123';
+        // Handle empty password - set default
+        if (!isset($data['password']) || trim((string)($data['password'] ?? '')) === '') {
+            Log::info('Password is empty, setting default');
+            $data['password'] = 'defaultpassword123';
+        } else {
+            Log::info('Password provided: ' . strlen($data['password']) . ' characters');
         }
 
-        // Create new user (validation will catch duplicates)
-        return new User($data);
+        Log::info('Creating user with data:', $data);
+
+        try {
+            $user = new User($data);
+            Log::info('User created successfully');
+            return $user;
+        } catch (\Exception $e) {
+            Log::error('Error creating user:', ['error' => $e->getMessage()]);
+            throw $e;
+        }
     }
 
     public static function getCompletedNotificationBody(Import $import): string
