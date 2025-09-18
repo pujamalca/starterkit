@@ -13,7 +13,8 @@
       "Bash(composer show:*)",
       "Bash(npm run build:*)",
       "Bash(npm uninstall:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(composer require:*)"
     ],
     "deny": [],
     "ask": []
