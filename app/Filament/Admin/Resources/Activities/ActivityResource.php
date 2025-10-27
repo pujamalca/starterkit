@@ -13,7 +13,6 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 class ActivityResource extends Resource
 {
@@ -46,48 +45,6 @@ class ActivityResource extends Resource
     public static function getNavigationGroup(): ?string
     {
         return 'Sistem';
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return static::canAccess();
-    }
-
-    public static function canViewAny(): bool
-    {
-        return static::canAccess();
-    }
-
-    public static function canView(Model $record): bool
-    {
-        return static::canAccess();
-    }
-
-    public static function canDelete(Model $record): bool
-    {
-        return false;
-    }
-
-    public static function canDeleteAny(): bool
-    {
-        return false;
-    }
-
-    public static function canCreate(): bool
-    {
-        return false;
-    }
-
-    public static function canEdit(Model $record): bool
-    {
-        return false;
-    }
-
-    public static function canAccess(): bool
-    {
-        $user = auth()->user();
-
-        return $user?->hasRole('Super Admin') || ($user?->can('view-activity-log') ?? false);
     }
 
     public static function getEloquentQuery(): Builder

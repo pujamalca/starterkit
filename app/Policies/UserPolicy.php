@@ -11,17 +11,17 @@ class UserPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->can('manage-users');
+        return $this->manage($user);
     }
 
     public function view(User $user, User $model): bool
     {
-        return $user->can('manage-users') || $user->is($model);
+        return $this->manage($user) || $user->is($model);
     }
 
     public function create(User $user): bool
     {
-        return $user->can('manage-users');
+        return $this->manage($user);
     }
 
     public function update(User $user, User $model): bool
@@ -30,7 +30,7 @@ class UserPolicy
             return true;
         }
 
-        return $user->can('manage-users');
+        return $this->manage($user);
     }
 
     public function delete(User $user, User $model): bool
@@ -39,7 +39,7 @@ class UserPolicy
             return false;
         }
 
-        return $user->can('manage-users');
+        return $this->manage($user);
     }
 
     public function restore(User $user, User $model): bool
@@ -51,5 +51,9 @@ class UserPolicy
     {
         return $user->hasRole('Super Admin');
     }
-}
 
+    protected function manage(User $user): bool
+    {
+        return $user->hasRole('Super Admin') || $user->can('manage-users');
+    }
+}
