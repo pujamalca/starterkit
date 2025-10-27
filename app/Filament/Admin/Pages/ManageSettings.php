@@ -69,7 +69,6 @@ class ManageSettings extends Page implements HasForms
                                             ->image()
                                             ->disk('public')
                                             ->directory('branding')
-                                            ->visibility('public')
                                             ->imageEditor()
                                             ->imagePreviewHeight('160')
                                             ->preserveFilenames()
@@ -79,7 +78,6 @@ class ManageSettings extends Page implements HasForms
                                             ->image()
                                             ->disk('public')
                                             ->directory('branding')
-                                            ->visibility('public')
                                             ->preserveFilenames()
                                             ->imagePreviewHeight('80')
                                             ->helperText('Gunakan ikon square (PNG/ICO, maks 1MB).')
@@ -228,8 +226,8 @@ class ManageSettings extends Page implements HasForms
             'general' => [
                 'site_name' => $general->site_name ?? config('app.name', 'Starter Kit'),
                 'site_description' => $general->site_description,
-                'site_logo' => $general->site_logo,
-                'site_favicon' => $general->site_favicon,
+                'site_logo' => $this->sanitizeMediaValue($general->site_logo),
+                'site_favicon' => $this->sanitizeMediaValue($general->site_favicon),
                 'site_keywords' => $general->site_keywords
                     ? array_filter(array_map('trim', explode(',', $general->site_keywords)))
                     : [],
@@ -267,6 +265,9 @@ class ManageSettings extends Page implements HasForms
             $data['general']['site_keywords'] = $keywords ? implode(',', $keywords) : null;
         }
 
+        $data['general']['site_logo'] = $this->sanitizeMediaValue($data['general']['site_logo'] ?? null);
+        $data['general']['site_favicon'] = $this->sanitizeMediaValue($data['general']['site_favicon'] ?? null);
+
         $data['general']['posts_per_page'] = (int) ($data['general']['posts_per_page'] ?? 10);
         $data['mail']['smtp_port'] = $data['mail']['smtp_port'] !== null
             ? (int) $data['mail']['smtp_port']
@@ -297,5 +298,28 @@ class ManageSettings extends Page implements HasForms
     public static function canAccess(): bool
     {
         return auth()->user()?->can('access-settings') ?? false;
+    }
+
+    protected function sanitizeMediaValue(?string $value): ?string
+    {
+        if (blank($value)) {
+            return null;
+        }
+
+        if (! filter_var($value, FILTER_VALIDATE_URL)) {
+            return ltrim($value, '/');
+        }
+
+        $parsedPath = parse_url($value, PHP_URL_PATH);
+
+        if (! $parsedPath) {
+            return null;
+        }
+
+        if (str_starts_with($parsedPath, '/storage/')) {
+            $parsedPath = substr($parsedPath, strlen('/storage/'));
+        }
+
+        return ltrim($parsedPath, '/');
     }
 }
