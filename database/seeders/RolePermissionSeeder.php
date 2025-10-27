@@ -33,6 +33,12 @@ class RolePermissionSeeder extends Seeder
                 'description' => 'Mengelola role dan permission.',
             ],
             [
+                'slug' => 'manage-permissions',
+                'label' => 'Manage Permissions',
+                'module' => 'users',
+                'description' => 'Mengelola daftar permission yang tersedia.',
+            ],
+            [
                 'slug' => 'access-settings',
                 'label' => 'Access Settings',
                 'module' => 'system',
