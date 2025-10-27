@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Providers\Filament;
+
 use App\Filament\Admin\Pages\ManageSettings;
 use App\Settings\GeneralSettings;
 use Filament\Actions\Action;
@@ -37,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight('2.25rem')
             ->favicon(fn () => $this->resolveFaviconUrl())
             ->renderHook(PanelsRenderHook::TOPBAR_LOGO_AFTER, fn () => $this->renderBrandText())
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->colors([
                 'primary' => Color::Amber,
             ])

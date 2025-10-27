@@ -14,7 +14,8 @@
       "Bash(npm run build:*)",
       "Bash(npm uninstall:*)",
       "Bash(npm install:*)",
-      "Bash(composer require:*)"
+      "Bash(composer require:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
