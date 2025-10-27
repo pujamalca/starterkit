@@ -31,5 +31,22 @@ class DatabaseSeeder extends Seeder
         if (! $admin->hasRole('Super Admin')) {
             $admin->assignRole('Super Admin');
         }
+
+        $editor = User::firstOrCreate(
+            ['email' => 'editor@example.com'],
+            [
+                'name' => 'Editor User',
+                'username' => 'editor',
+                'email_verified_at' => now(),
+                'is_active' => true,
+                'password' => Hash::make('password'),
+            ]
+        );
+
+        if (! $editor->hasRole('Content Editor')) {
+            $editor->assignRole('Content Editor');
+        }
+
+        $this->call(ContentSeeder::class);
     }
 }

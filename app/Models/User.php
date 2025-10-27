@@ -4,9 +4,14 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
@@ -14,7 +19,13 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes, HasRoles, InteractsWithMedia;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
+    use HasRoles;
+    use InteractsWithMedia;
+    use LogsActivity;
 
     protected string $guard_name = 'web';
 
@@ -69,5 +80,54 @@ class User extends Authenticatable implements HasMedia
     {
         $this->addMediaCollection('avatar')
             ->singleFile();
+    }
+
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class, 'author_id');
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function getAvatarUrl(): string
+    {
+        if ($this->avatar) {
+            return $this->avatar;
+        }
+
+        if ($this->hasMedia('avatar')) {
+            return $this->getFirstMediaUrl('avatar');
+        }
+
+        return sprintf('https://www.gravatar.com/avatar/%s?d=mp', md5(strtolower(trim((string) $this->email))));
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasAnyRole(['Super Admin', 'Admin']) || $this->can('manage-users');
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole('Super Admin');
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return Str::of($this->name)
+            ->whenBlank(fn () => Str::of($this->username))
+            ->whenBlank(fn () => Str::of($this->email))
+            ->toString();
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('user')
+            ->logOnlyDirty()
+            ->logFillable();
     }
 }
