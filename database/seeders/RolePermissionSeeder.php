@@ -12,26 +12,26 @@ class RolePermissionSeeder extends Seeder
     {
         $permissionDefinitions = [
             [
-                'name' => 'Access Admin Panel',
                 'slug' => 'access-admin-panel',
+                'label' => 'Access Admin Panel',
                 'module' => 'system',
                 'description' => 'Akses penuh ke panel admin.',
             ],
             [
-                'name' => 'Manage Users',
                 'slug' => 'manage-users',
+                'label' => 'Manage Users',
                 'module' => 'users',
                 'description' => 'Mengelola data pengguna termasuk role & status aktif.',
             ],
             [
-                'name' => 'Manage Roles',
                 'slug' => 'manage-roles',
+                'label' => 'Manage Roles',
                 'module' => 'users',
                 'description' => 'Mengelola role dan permission.',
             ],
             [
-                'name' => 'Access Settings',
                 'slug' => 'access-settings',
+                'label' => 'Access Settings',
                 'module' => 'system',
                 'description' => 'Akses halaman pengaturan aplikasi.',
             ],
@@ -40,7 +40,16 @@ class RolePermissionSeeder extends Seeder
         $permissions = collect($permissionDefinitions)->map(function (array $attributes) {
             return Permission::updateOrCreate(
                 ['slug' => $attributes['slug']],
-                array_merge($attributes, ['guard_name' => 'web'])
+                [
+                    'name' => $attributes['slug'],
+                    'slug' => $attributes['slug'],
+                    'module' => $attributes['module'],
+                    'description' => $attributes['description'],
+                    'guard_name' => 'web',
+                    'metadata' => [
+                        'label' => $attributes['label'],
+                    ],
+                ]
             );
         })->values();
 
