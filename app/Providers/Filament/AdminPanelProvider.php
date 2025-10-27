@@ -12,6 +12,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -19,9 +20,9 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\HtmlString;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+use function e;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -33,7 +34,9 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->brandName(fn () => $this->resolveBrandName())
             ->brandLogo(fn () => $this->resolveBrandLogo())
+            ->brandLogoHeight('2.25rem')
             ->favicon(fn () => $this->resolveFaviconUrl())
+            ->renderHook(PanelsRenderHook::TOPBAR_LOGO_AFTER, fn () => $this->renderBrandText())
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -80,25 +83,17 @@ class AdminPanelProvider extends PanelProvider
         return $settings->site_name ?? config('app.name', 'Starter Kit');
     }
 
-    protected function resolveBrandLogo(): HtmlString|string|null
+    protected function resolveBrandLogo(): ?string
     {
         $settings = app(GeneralSettings::class);
 
         $logoUrl = $this->toPublicUrl($settings->site_logo);
-        $brandName = $this->resolveBrandName();
 
         if (! $logoUrl) {
             return null;
         }
 
-        $html = sprintf(
-            '<span class="inline-flex items-center gap-2 fi-brand-logo"><img src="%s" alt="%s" class="h-8 w-auto"><span class="text-base font-semibold text-gray-900 dark:text-white">%s</span></span>',
-            e($logoUrl),
-            e($brandName),
-            e($brandName),
-        );
-
-        return new HtmlString($html);
+        return $logoUrl;
     }
 
     protected function resolveFaviconUrl(): ?string
@@ -125,5 +120,42 @@ class AdminPanelProvider extends PanelProvider
         }
 
         return '/storage/' . $normalizedPath;
+    }
+
+    protected function renderBrandText(): string
+    {
+        if ($this->isAuthRoute()) {
+            return '';
+        }
+
+        $brandName = $this->resolveBrandName();
+
+        if (blank($brandName)) {
+            return '';
+        }
+
+        return sprintf(
+            '<span class="hidden sm:inline-flex items-center text-sm font-semibold text-gray-700 dark:text-gray-200 ml-2">%s</span>',
+            e($brandName),
+        );
+    }
+
+    protected function isAuthRoute(): bool
+    {
+        $request = request();
+
+        if (! $request) {
+            return false;
+        }
+
+        $routeName = $request->route()?->getName();
+
+        if ($routeName && str_contains($routeName, '.auth.')) {
+            return true;
+        }
+
+        $path = $request->path();
+
+        return str_starts_with($path, 'admin/login');
     }
 }

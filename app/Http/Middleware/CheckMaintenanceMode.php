@@ -18,7 +18,7 @@ class CheckMaintenanceMode
             return $next($request);
         }
 
-        if ($this->isAdminRequest($request)) {
+        if ($this->shouldBypass($request)) {
             return $next($request);
         }
 
@@ -33,8 +33,34 @@ class CheckMaintenanceMode
         ], 503);
     }
 
-    protected function isAdminRequest(Request $request): bool
+    protected function shouldBypass(Request $request): bool
     {
-        return str_starts_with($request->path(), 'admin');
+        $routeName = $request->route()?->getName();
+
+        if ($routeName && str_starts_with($routeName, 'filament.')) {
+            return true;
+        }
+
+        if (str_starts_with($request->path(), 'admin')) {
+            return true;
+        }
+
+        if ($routeName && str_starts_with($routeName, 'login')) {
+            return true;
+        }
+
+        if (str_starts_with($request->path(), 'login') || str_starts_with($request->path(), 'register') || str_starts_with($request->path(), 'password')) {
+            return true;
+        }
+
+        if (str_starts_with($request->path(), 'livewire') || str_starts_with($request->path(), 'broadcasting')) {
+            return true;
+        }
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return true;
+        }
+
+        return $request->user()?->can('access-admin-panel') ?? false;
     }
 }
