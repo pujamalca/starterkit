@@ -79,6 +79,8 @@ class CommentResource extends Resource
 
     protected static function canManage(): bool
     {
-        return auth()->user()?->can('manage-comments') ?? false;
+        $user = auth()->user();
+
+        return $user?->hasRole('Super Admin') || ($user?->can('manage-comments') ?? false);
     }
 }

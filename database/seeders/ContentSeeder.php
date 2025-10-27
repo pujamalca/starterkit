@@ -8,70 +8,84 @@ use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 
 class ContentSeeder extends Seeder
 {
     public function run(): void
     {
-        $additionalUsers = User::factory()->count(3)->create();
-        $allUsers = User::query()->get();
+        if (Post::exists()) {
+            return;
+        }
+
+        if (User::count() < 10) {
+            User::factory()->count(3)->create();
+        }
 
         $categories = Category::factory()->count(4)->create();
 
-        Category::factory()
-            ->count(4)
-            ->create(fn () => ['parent_id' => $categories->random()->id]);
+        $childCategories = collect();
+        foreach (range(1, 4) as $i) {
+            $childCategories->push(Category::factory()->create([
+                'parent_id' => $categories->random()->id,
+            ]));
+        }
+
+        $categories = $categories->merge($childCategories);
 
         $tags = Tag::factory()->count(8)->create();
 
-        $posts = Post::factory()
-            ->count(12)
-            ->make()
-            ->each(function (Post $post) use ($categories, $allUsers) {
-                $post->category_id = $categories->random()->id;
-                $post->author_id = $allUsers->random()->id;
+        $authors = User::inRandomOrder()->take(8)->get();
 
-                if ($post->status === 'published' && ! $post->published_at) {
-                    $post->published_at = now()->subDays(rand(1, 14));
-                }
+        foreach (range(1, 12) as $index) {
+            $post = Post::factory()->create([
+                'category_id' => $categories->random()->id,
+                'author_id' => $authors->random()->id,
+            ]);
 
-                $post->save();
-            });
-
-        $posts->each(function (Post $post) use ($tags, $allUsers) {
             $post->tags()->sync($tags->random(rand(2, 4))->pluck('id'));
 
-            Comment::factory()
-                ->count(rand(1, 3))
-                ->make()
-                ->each(function (Comment $comment) use ($post, $allUsers) {
-                    $comment->commentable_type = Post::class;
-                    $comment->commentable_id = $post->id;
-                    $comment->user_id = Arr::random([$allUsers->random()->id, null]);
+            $this->seedCommentsForPost($post, $authors);
+        }
+    }
 
-                    if (! $comment->user_id) {
-                        $comment->guest_name = fake()->name();
-                        $comment->guest_email = fake()->safeEmail();
-                    }
+    protected function seedCommentsForPost(Post $post, Collection $authors): void
+    {
+        $commentTotal = rand(1, 3);
 
-                    $comment->save();
+        for ($i = 0; $i < $commentTotal; $i++) {
+            $useGuest = (bool) rand(0, 1);
 
-                    if (rand(0, 1)) {
-                        Comment::factory()
-                            ->count(rand(0, 2))
-                            ->make()
-                            ->each(function (Comment $reply) use ($comment, $allUsers) {
-                                $reply->commentable_type = $comment->commentable_type;
-                                $reply->commentable_id = $comment->commentable_id;
-                                $reply->parent_id = $comment->id;
-                                $reply->user_id = $allUsers->random()->id;
-                                $reply->is_approved = true;
-                                $reply->save();
-                            });
-                    }
-                });
-        });
+            $commentFactory = Comment::factory()->state([
+                'commentable_type' => Post::class,
+                'commentable_id' => $post->id,
+                'is_approved' => (bool) rand(0, 1),
+                'is_featured' => (bool) rand(0, 1),
+            ]);
+
+            if ($useGuest) {
+                $comment = $commentFactory->guest()->create();
+            } else {
+                $comment = $commentFactory->byUser($authors->random())->create();
+            }
+
+            if (! $comment->is_approved || rand(0, 1) === 0) {
+                continue;
+            }
+
+            $replyTotal = rand(0, 2);
+
+            for ($j = 0; $j < $replyTotal; $j++) {
+                Comment::factory()
+                    ->byUser($authors->random())
+                    ->state([
+                        'commentable_type' => Post::class,
+                        'commentable_id' => $post->id,
+                        'parent_id' => $comment->id,
+                        'is_approved' => true,
+                        'is_featured' => false,
+                    ])->create();
+            }
+        }
     }
 }
-

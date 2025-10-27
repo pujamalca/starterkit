@@ -85,6 +85,8 @@ class CategoryResource extends Resource
 
     protected static function canManage(): bool
     {
-        return auth()->user()?->can('manage-categories') ?? false;
+        $user = auth()->user();
+
+        return $user?->hasRole('Super Admin') || ($user?->can('manage-categories') ?? false);
     }
 }

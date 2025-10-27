@@ -85,7 +85,9 @@ class ActivityResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->can('view-activity-log') ?? false;
+        $user = auth()->user();
+
+        return $user?->hasRole('Super Admin') || ($user?->can('view-activity-log') ?? false);
     }
 
     public static function getEloquentQuery(): Builder

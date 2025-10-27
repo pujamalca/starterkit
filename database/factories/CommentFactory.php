@@ -17,8 +17,8 @@ class CommentFactory extends Factory
     public function definition(): array
     {
         return [
-            'commentable_type' => Post::class,
-            'commentable_id' => Post::factory(),
+            'commentable_type' => null,
+            'commentable_id' => null,
             'user_id' => null,
             'parent_id' => null,
             'guest_name' => null,
@@ -35,6 +35,8 @@ class CommentFactory extends Factory
     {
         return $this->state(fn () => [
             'user_id' => $user->id,
+            'guest_name' => null,
+            'guest_email' => null,
         ]);
     }
 
