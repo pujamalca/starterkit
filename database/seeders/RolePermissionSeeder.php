@@ -59,6 +59,12 @@ class RolePermissionSeeder extends Seeder
                 'module' => 'content',
                 'description' => 'Moderasi dan penyuntingan komentar.',
             ],
+            [
+                'slug' => 'view-activity-log',
+                'label' => 'View Activity Log',
+                'module' => 'system',
+                'description' => 'Melihat catatan aktivitas aplikasi.',
+            ],
         ];
 
         $permissions = collect($permissionDefinitions)->mapWithKeys(function (array $attributes) {
