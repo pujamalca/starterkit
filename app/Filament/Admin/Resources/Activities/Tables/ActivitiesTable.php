@@ -2,8 +2,9 @@
 
 namespace App\Filament\Admin\Resources\Activities\Tables;
 
+use App\Filament\Admin\Resources\Activities\ActivityResource;
 use App\Models\Activity;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -16,6 +17,8 @@ class ActivitiesTable
     {
         return $table
             ->defaultSort('created_at', 'desc')
+            ->recordAction(null)
+            ->recordUrl(fn (Activity $record): string => ActivityResource::getUrl('view', ['record' => $record]))
             ->columns([
                 TextColumn::make('created_at')
                     ->label('Waktu')
@@ -61,9 +64,6 @@ class ActivitiesTable
                 Filter::make('causer')
                     ->label('Memiliki Pengguna')
                     ->query(fn ($query) => $query->whereNotNull('causer_id')),
-            ])
-            ->actions([
-                ViewAction::make()->label('Detail'),
             ])
             ->bulkActions([]);
     }

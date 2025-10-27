@@ -2,12 +2,8 @@
 
 namespace App\Filament\Admin\Resources\Categories\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\EditAction;
+use App\Filament\Admin\Resources\Categories\CategoryResource;
+use App\Models\Category;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -19,6 +15,8 @@ class CategoriesTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordAction(null)
+            ->recordUrl(fn (Category $record): string => CategoryResource::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('name')
                     ->label('Nama')
@@ -55,18 +53,6 @@ class CategoriesTable
                 Filter::make('featured')
                     ->label('Sorotan')
                     ->query(fn ($query) => $query->where('is_featured', true)),
-            ])
-            ->actions([
-                EditAction::make()->label('Edit'),
-                DeleteAction::make()->label('Hapus'),
-            ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()->label('Hapus'),
-                    ForceDeleteBulkAction::make()->label('Hapus Permanen'),
-                    RestoreBulkAction::make()->label('Pulihkan'),
-                ]),
             ]);
     }
 }
-

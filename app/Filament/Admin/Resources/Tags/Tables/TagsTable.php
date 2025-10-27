@@ -2,12 +2,8 @@
 
 namespace App\Filament\Admin\Resources\Tags\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\EditAction;
+use App\Filament\Admin\Resources\Tags\TagResource;
+use App\Models\Tag;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -18,6 +14,8 @@ class TagsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordAction(null)
+            ->recordUrl(fn (Tag $record): string => TagResource::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('name')
                     ->label('Nama')
@@ -53,18 +51,6 @@ class TagsTable
                         'page' => 'Halaman',
                         'news' => 'Berita',
                     ]),
-            ])
-            ->actions([
-                EditAction::make()->label('Edit'),
-                DeleteAction::make()->label('Hapus'),
-            ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()->label('Hapus'),
-                    ForceDeleteBulkAction::make()->label('Hapus Permanen'),
-                    RestoreBulkAction::make()->label('Pulihkan'),
-                ]),
             ]);
     }
 }
-

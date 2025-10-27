@@ -2,12 +2,8 @@
 
 namespace App\Filament\Admin\Resources\Posts\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\EditAction;
+use App\Filament\Admin\Resources\Posts\PostResource;
+use App\Models\Post;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -20,6 +16,8 @@ class PostsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordAction(null)
+            ->recordUrl(fn (Post $record): string => PostResource::getUrl('edit', ['record' => $record]))
             ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('title')
@@ -104,18 +102,6 @@ class PostsTable
                 TernaryFilter::make('is_featured')
                     ->label('Sorotan')
                     ->placeholder('Semua'),
-            ])
-            ->actions([
-                EditAction::make()->label('Edit'),
-                DeleteAction::make()->label('Hapus'),
-            ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()->label('Hapus'),
-                    ForceDeleteBulkAction::make()->label('Hapus Permanen'),
-                    RestoreBulkAction::make()->label('Pulihkan'),
-                ]),
             ]);
     }
 }
-
