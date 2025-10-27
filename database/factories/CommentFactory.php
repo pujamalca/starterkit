@@ -19,7 +19,7 @@ class CommentFactory extends Factory
         return [
             'commentable_type' => Post::class,
             'commentable_id' => Post::factory(),
-            'user_id' => User::factory(),
+            'user_id' => null,
             'parent_id' => null,
             'guest_name' => null,
             'guest_email' => null,
@@ -29,6 +29,13 @@ class CommentFactory extends Factory
             'likes_count' => fake()->numberBetween(0, 100),
             'metadata' => null,
         ];
+    }
+
+    public function byUser(User $user): self
+    {
+        return $this->state(fn () => [
+            'user_id' => $user->id,
+        ]);
     }
 
     public function guest(): self
@@ -42,4 +49,3 @@ class CommentFactory extends Factory
         });
     }
 }
-
