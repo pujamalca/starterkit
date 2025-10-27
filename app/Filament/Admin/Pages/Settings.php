@@ -12,4 +12,9 @@ class Settings extends Page
 
     // Hide from navigation since we'll access via user menu
     protected static bool $shouldRegisterNavigation = false;
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->can('access-settings') ?? false;
+    }
 }

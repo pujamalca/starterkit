@@ -69,6 +69,7 @@ class UserForm
                     ->multiple()
                     ->preload()
                     ->searchable()
+                    ->visible(fn (): bool => auth()->user()?->can('manage-roles') ?? false)
                     ->helperText('Atur role dan permission pengguna.'),
             ]);
     }

@@ -15,6 +15,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class UserResource extends Resource
 {
@@ -22,7 +23,7 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUser;
 
-    protected static ?string $recordTitleAttribute = 'user';
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
     {
@@ -31,7 +32,20 @@ class UserResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        if (! Auth::user()?->can('manage-users')) {
+            return null;
+        }
+
+        return (string) static::getModel()::count();
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        if (! static::$shouldRegisterNavigation) {
+            return false;
+        }
+
+        return Auth::user()?->can('manage-users') ?? false;
     }
 
     public static function table(Table $table): Table

@@ -12,6 +12,12 @@ class RolePermissionSeeder extends Seeder
     {
         $permissionDefinitions = [
             [
+                'name' => 'Access Admin Panel',
+                'slug' => 'access-admin-panel',
+                'module' => 'system',
+                'description' => 'Akses penuh ke panel admin.',
+            ],
+            [
                 'name' => 'Manage Users',
                 'slug' => 'manage-users',
                 'module' => 'users',
@@ -36,7 +42,7 @@ class RolePermissionSeeder extends Seeder
                 ['slug' => $attributes['slug']],
                 array_merge($attributes, ['guard_name' => 'web'])
             );
-        });
+        })->values();
 
         $superAdmin = Role::updateOrCreate(
             ['slug' => 'super-admin'],
@@ -50,7 +56,7 @@ class RolePermissionSeeder extends Seeder
 
         $superAdmin->syncPermissions($permissions);
 
-        Role::updateOrCreate(
+        $contentEditor = Role::updateOrCreate(
             ['slug' => 'content-editor'],
             [
                 'name' => 'Content Editor',
@@ -58,6 +64,11 @@ class RolePermissionSeeder extends Seeder
                 'guard_name' => 'web',
             ]
         );
+
+        $contentEditor->syncPermissions(
+            $permissions->filter(fn (Permission $permission) => in_array($permission->slug, [
+                'access-admin-panel',
+            ], true))
+        );
     }
 }
-

@@ -7,6 +7,8 @@ use Spatie\Permission\Models\Role as SpatieRole;
 
 class Role extends SpatieRole
 {
+    protected string $guard_name = 'web';
+
     protected $fillable = [
         'name',
         'slug',
@@ -34,4 +36,3 @@ class Role extends SpatieRole
         });
     }
 }
-

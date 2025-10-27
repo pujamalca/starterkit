@@ -16,6 +16,8 @@ class User extends Authenticatable implements HasMedia
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SoftDeletes, HasRoles, InteractsWithMedia;
 
+    protected string $guard_name = 'web';
+
     /**
      * The attributes that are mass assignable.
      *

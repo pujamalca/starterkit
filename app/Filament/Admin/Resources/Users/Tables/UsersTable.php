@@ -76,20 +76,22 @@ class UsersTable
             ])
             ->headerActions([
                 ImportAction::make()
-                    ->importer(UsersImport::class),
+                    ->importer(UsersImport::class)
+                    ->visible(fn (): bool => auth()->user()?->can('manage-users') ?? false),
                 ExportAction::make()
                     ->exporter(UsersExport::class)
                     ->formats([
                         ExportFormat::Xlsx,
                         ExportFormat::Csv,
-                    ]),
+                    ])
+                    ->visible(fn (): bool => auth()->user()?->can('manage-users') ?? false),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
-                ]),
+                ])->visible(fn (): bool => auth()->user()?->can('manage-users') ?? false),
             ]);
     }
 }

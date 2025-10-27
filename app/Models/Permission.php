@@ -7,6 +7,8 @@ use Spatie\Permission\Models\Permission as SpatiePermission;
 
 class Permission extends SpatiePermission
 {
+    protected string $guard_name = 'web';
+
     protected $fillable = [
         'name',
         'slug',
@@ -33,4 +35,3 @@ class Permission extends SpatiePermission
         });
     }
 }
-

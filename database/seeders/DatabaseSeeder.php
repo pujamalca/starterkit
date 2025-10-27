@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,13 +17,19 @@ class DatabaseSeeder extends Seeder
 
         $this->call(RolePermissionSeeder::class);
 
-        $admin = User::factory()->create([
-            'name' => 'Admin User',
-            'username' => 'admin',
-            'email' => 'admin@example.com',
-            'is_active' => true,
-        ]);
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin User',
+                'username' => 'admin',
+                'email_verified_at' => now(),
+                'is_active' => true,
+                'password' => Hash::make('password'),
+            ]
+        );
 
-        $admin->assignRole('Super Admin');
+        if (! $admin->hasRole('Super Admin')) {
+            $admin->assignRole('Super Admin');
+        }
     }
 }

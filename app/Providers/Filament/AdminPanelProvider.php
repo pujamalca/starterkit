@@ -31,10 +31,11 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-                        ->userMenuItems([
+            ->userMenuItems([
                 Action::make('settings')
-                ->url(fn (): string => PagesSettings::getUrl())
-                ->icon('heroicon-o-cog-6-tooth'),
+                    ->visible(fn (): bool => auth()->user()?->can('access-settings') ?? false)
+                    ->url(fn (): string => PagesSettings::getUrl())
+                    ->icon('heroicon-o-cog-6-tooth'),
             ])
             ->default()
             ->authGuard('web')
@@ -62,6 +63,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                'permission:access-admin-panel',
             ]);
     }
 }
