@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Pages;
 
+use Illuminate\Http\RedirectResponse;
 use Filament\Pages\Page;
 
 class Settings extends Page
@@ -16,5 +17,12 @@ class Settings extends Page
     public static function canAccess(): bool
     {
         return auth()->user()?->can('access-settings') ?? false;
+    }
+
+    public function mount(): ?RedirectResponse
+    {
+        return static::canAccess()
+            ? redirect()->to(ManageSettings::getUrl())
+            : null;
     }
 }

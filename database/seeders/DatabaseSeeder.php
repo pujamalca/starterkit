@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $this->call(RolePermissionSeeder::class);
+        $this->call(SettingSeeder::class);
 
         $admin = User::updateOrCreate(
             ['email' => 'admin@example.com'],

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Providers\Filament;
-use App\Filament\Admin\Pages\Settings as PagesSettings;
+use App\Filament\Admin\Pages\ManageSettings;
 use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -34,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->userMenuItems([
                 Action::make('settings')
                     ->visible(fn (): bool => auth()->user()?->can('access-settings') ?? false)
-                    ->url(fn (): string => PagesSettings::getUrl())
+                    ->url(fn (): string => ManageSettings::getUrl())
                     ->icon('heroicon-o-cog-6-tooth'),
             ])
             ->default()
