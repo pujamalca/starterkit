@@ -21,10 +21,22 @@ class UsersImport extends Importer
                 ->label('Name')
                 ->requiredMapping()
                 ->rules(['required', 'max:255']),
+            ImportColumn::make('username')
+                ->label('Username')
+                ->rules(['nullable', 'max:50']),
             ImportColumn::make('email')
                 ->label('Email Address')
                 ->requiredMapping()
                 ->rules(['required', 'email', 'max:255']),
+            ImportColumn::make('phone')
+                ->label('Phone')
+                ->rules(['nullable', 'max:20']),
+            ImportColumn::make('avatar')
+                ->label('Avatar URL')
+                ->rules(['nullable', 'max:255']),
+            ImportColumn::make('bio')
+                ->label('Bio')
+                ->rules(['nullable']),
             ImportColumn::make('email_verified_at')
                 ->label('Email Verified At')
                 ->rules(['nullable', 'date']),
@@ -32,6 +44,22 @@ class UsersImport extends Importer
                 ->label('Password')
                 ->rules(['nullable'])
                 ->example('defaultpassword123'),
+            ImportColumn::make('is_active')
+                ->label('Active')
+                ->rules(['nullable', 'boolean'])
+                ->example('1'),
+            ImportColumn::make('last_login_at')
+                ->label('Last Login At')
+                ->rules(['nullable', 'date']),
+            ImportColumn::make('last_login_ip')
+                ->label('Last Login IP')
+                ->rules(['nullable', 'max:45']),
+            ImportColumn::make('preferences')
+                ->label('Preferences (JSON)')
+                ->rules(['nullable']),
+            ImportColumn::make('metadata')
+                ->label('Metadata (JSON)')
+                ->rules(['nullable']),
         ];
     }
 
@@ -49,6 +77,19 @@ class UsersImport extends Importer
             $data['password'] = 'defaultpassword123';
         } else {
             Log::info('Password provided: ' . strlen($data['password']) . ' characters');
+        }
+
+        // Coerce booleans and JSON-like fields if provided as strings
+        if (array_key_exists('is_active', $data)) {
+            $data['is_active'] = filter_var($data['is_active'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        }
+        foreach (['preferences', 'metadata'] as $jsonField) {
+            if (isset($data[$jsonField]) && is_string($data[$jsonField])) {
+                $decoded = json_decode($data[$jsonField], true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $data[$jsonField] = $decoded;
+                }
+            }
         }
 
         Log::info('Creating user with data:', $data);
