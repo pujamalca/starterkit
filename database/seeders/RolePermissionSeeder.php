@@ -35,10 +35,34 @@ class RolePermissionSeeder extends Seeder
                 'module' => 'system',
                 'description' => 'Akses halaman pengaturan aplikasi.',
             ],
+            [
+                'slug' => 'manage-posts',
+                'label' => 'Manage Posts',
+                'module' => 'content',
+                'description' => 'Membuat dan mengelola postingan.',
+            ],
+            [
+                'slug' => 'manage-categories',
+                'label' => 'Manage Categories',
+                'module' => 'content',
+                'description' => 'Mengelola struktur kategori konten.',
+            ],
+            [
+                'slug' => 'manage-tags',
+                'label' => 'Manage Tags',
+                'module' => 'content',
+                'description' => 'Mengelola tag untuk klasifikasi konten.',
+            ],
+            [
+                'slug' => 'manage-comments',
+                'label' => 'Manage Comments',
+                'module' => 'content',
+                'description' => 'Moderasi dan penyuntingan komentar.',
+            ],
         ];
 
-        $permissions = collect($permissionDefinitions)->map(function (array $attributes) {
-            return Permission::updateOrCreate(
+        $permissions = collect($permissionDefinitions)->mapWithKeys(function (array $attributes) {
+            $permission = Permission::updateOrCreate(
                 ['slug' => $attributes['slug']],
                 [
                     'name' => $attributes['slug'],
@@ -51,7 +75,9 @@ class RolePermissionSeeder extends Seeder
                     ],
                 ]
             );
-        })->values();
+
+            return [$permission->slug => $permission];
+        });
 
         $superAdmin = Role::updateOrCreate(
             ['slug' => 'super-admin'],
@@ -63,7 +89,7 @@ class RolePermissionSeeder extends Seeder
             ]
         );
 
-        $superAdmin->syncPermissions($permissions);
+        $superAdmin->syncPermissions($permissions->values());
 
         $contentEditor = Role::updateOrCreate(
             ['slug' => 'content-editor'],
@@ -75,9 +101,13 @@ class RolePermissionSeeder extends Seeder
         );
 
         $contentEditor->syncPermissions(
-            $permissions->filter(fn (Permission $permission) => in_array($permission->slug, [
+            $permissions->only([
                 'access-admin-panel',
-            ], true))
+                'manage-posts',
+                'manage-categories',
+                'manage-tags',
+                'manage-comments',
+            ])->values()
         );
     }
 }

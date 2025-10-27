@@ -40,6 +40,7 @@ class CategoryForm
                         ->searchable()
                         ->preload()
                         ->placeholder('Tanpa induk')
+                        ->disableOptionWhen(fn ($value, ?Category $record) => $record && (int) $value === $record->id)
                         ->getOptionLabelFromRecordUsing(fn (Category $record) => $record->path)
                         ->columnSpanFull(),
                     Textarea::make('description')
