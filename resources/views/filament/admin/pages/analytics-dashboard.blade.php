@@ -14,61 +14,54 @@
         [
             'title' => 'Rata-rata View / Post',
             'value' => number_format((float) $summary->get('avg_views_per_post', 0), 1),
-            'description' => 'Rata-rata view per konten.',
+            'description' => 'Rata-rata view per konten terbit.',
         ],
         [
-            'title' => 'Publikasi 30 Hari',
+            'title' => 'Post Terpublikasi',
             'value' => number_format((int) $summary->get('posts_published', 0)),
-            'description' => 'Jumlah konten publish aktif.',
+            'description' => 'Jumlah konten aktif yang tayang.',
         ],
         [
             'title' => 'Pengguna Aktif',
             'value' => number_format((int) $summary->get('active_users', 0)),
-            'description' => 'User aktif yang dapat berinteraksi.',
+            'description' => 'User yang masih memiliki akses aktif.',
         ],
-    ];
-
-    $trendChartData = [
-        'labels' => collect($trends)->pluck('date')->all(),
-        'posts' => collect($trends)->pluck('posts')->all(),
-        'comments' => collect($trends)->pluck('comments')->all(),
-        'users' => collect($trends)->pluck('users')->all(),
     ];
 @endphp
 
 <x-filament-panels::page>
     <div class="space-y-10">
-        <div class="rounded-3xl border border-slate-200 bg-gradient-to-br from-sky-600 via-sky-700 to-sky-900 p-8 shadow-xl ring-1 ring-sky-500/40 dark:border-slate-800 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950">
+        <div class="rounded-3xl border border-gray-200 bg-gray-900 p-8 text-gray-100 shadow-xl dark:border-gray-700 dark:bg-gray-950">
             <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                 <div class="space-y-2">
-                    <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-100 ring-1 ring-white/20">
-                        <span class="size-2 rounded-full bg-sky-300 shadow"></span>
+                    <span class="inline-flex items-center gap-2 rounded-full bg-gray-800 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-200">
+                        <span class="size-2 rounded-full bg-sky-400"></span>
                         Analytics
                     </span>
                     <div>
-                        <h2 class="text-3xl font-semibold tracking-tight text-white">
-                            Insight Kinerja Konten & Pengguna
+                        <h2 class="text-3xl font-semibold tracking-tight">
+                            Insight Performa Konten & Pengguna
                         </h2>
-                        <p class="mt-1 text-sm text-sky-100/80">
-                            Pantau pertumbuhan konten, keterlibatan pengguna, dan performa post populer.
+                        <p class="mt-2 text-sm text-gray-300">
+                            Pantau pertumbuhan konten, interaksi komunitas, dan konten terpopuler menggunakan ringkasan ini.
                         </p>
                     </div>
                 </div>
-                <div class="grid gap-3 text-xs font-medium text-sky-100 sm:grid-cols-3">
-                    <div class="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-center">
-                        <div class="text-lg font-semibold text-white">
+                <div class="grid gap-3 text-xs font-medium text-gray-200 sm:grid-cols-3">
+                    <div class="rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-center">
+                        <div class="text-lg font-semibold text-gray-100">
                             {{ number_format((int) $summary->get('total_comments', 0)) }}
                         </div>
                         <div>Total Komentar</div>
                     </div>
-                    <div class="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-center">
-                        <div class="text-lg font-semibold text-white">
+                    <div class="rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-center">
+                        <div class="text-lg font-semibold text-gray-100">
                             {{ number_format((int) $summary->get('new_users_30_days', 0)) }}
                         </div>
                         <div>User Baru 30 Hari</div>
                     </div>
-                    <div class="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-center">
-                        <div class="text-lg font-semibold text-white">
+                    <div class="rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-center">
+                        <div class="text-lg font-semibold text-gray-100">
                             {{ $rates['views_per_published_post'] ?? 0 }}
                         </div>
                         <div>Views / Post Publish</div>
@@ -77,13 +70,13 @@
             </div>
         </div>
 
-        <div class="rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-sm ring-1 ring-slate-100 dark:border-slate-700 dark:bg-slate-900/80 dark:ring-slate-800/80">
+        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
             <div class="flex items-center justify-between">
-                <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
-                    Tren Aktivitas
+                <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-300">
+                    Tren Aktivitas 30 Hari
                 </h3>
-                <span class="text-xs text-slate-400">
-                    Visualisasi pertumbuhan konten dan interaksi 30 hari terakhir.
+                <span class="text-xs text-gray-400">
+                    Visualisasi posts, komentar, dan user baru dalam 30 hari terakhir.
                 </span>
             </div>
             <div class="mt-4">
@@ -92,19 +85,19 @@
         </div>
 
         <div>
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                Ringkasan
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                Ringkasan Cepat
             </h3>
             <div class="mt-4 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
                 @foreach ($summaryCards as $card)
-                    <div class="rounded-3xl border border-slate-200 bg-white/80 p-5 shadow-sm ring-1 ring-slate-100 transition hover:-translate-y-1 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900/80 dark:ring-slate-800/80">
-                        <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    <div class="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-gray-700 dark:bg-gray-900">
+                        <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                             {{ $card['title'] }}
                         </h4>
-                        <div class="mt-3 text-3xl font-semibold text-slate-900 dark:text-white">
+                        <div class="mt-3 text-3xl font-semibold text-gray-900 dark:text-white">
                             {{ $card['value'] }}
                         </div>
-                        <p class="mt-2 text-xs text-slate-400 dark:text-slate-500">
+                        <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
                             {{ $card['description'] }}
                         </p>
                     </div>
@@ -113,32 +106,29 @@
         </div>
 
         <div class="grid gap-6 lg:grid-cols-3">
-            <div class="lg:col-span-2 rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-sm ring-1 ring-slate-100 dark:border-slate-700 dark:bg-slate-900/80 dark:ring-slate-800/80">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                        Aktivitas 30 Hari Terakhir
-                    </h3>
-                    <span class="text-2xs uppercase tracking-widest text-slate-400">
-                        Posts • Comments • Users
-                    </span>
-                </div>
+            <div class="lg:col-span-2 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    Rincian Aktivitas
+                </h3>
                 <div class="mt-5">
-                    @if (empty($trendChartData['labels']))
-                        <p class="text-sm text-slate-400">Belum ada data aktivitas dalam 30 hari terakhir.</p>
+                    @if (empty($trends))
+                        <p class="text-sm text-gray-400 dark:text-gray-500">
+                            Belum ada data aktivitas dalam 30 hari terakhir.
+                        </p>
                     @else
-                        <div class="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-800">
-                            <table class="w-full min-w-full divide-y divide-slate-100 text-xs dark:divide-slate-800">
-                                <thead class="bg-slate-50 dark:bg-slate-900/60">
-                                    <tr class="text-left">
-                                        <th class="px-4 py-2 font-medium text-slate-500">Tanggal</th>
-                                        <th class="px-4 py-2 font-medium text-slate-500">Posts</th>
-                                        <th class="px-4 py-2 font-medium text-slate-500">Comments</th>
-                                        <th class="px-4 py-2 font-medium text-slate-500">Users</th>
+                        <div class="overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800">
+                            <table class="w-full min-w-full divide-y divide-gray-100 text-xs dark:divide-gray-800">
+                                <thead class="bg-gray-50 dark:bg-gray-900/60">
+                                    <tr class="text-left text-gray-500 dark:text-gray-400">
+                                        <th class="px-4 py-2 font-medium">Tanggal</th>
+                                        <th class="px-4 py-2 font-medium">Posts</th>
+                                        <th class="px-4 py-2 font-medium">Comments</th>
+                                        <th class="px-4 py-2 font-medium">Users</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                                     @foreach ($trends as $row)
-                                        <tr class="text-slate-600 dark:text-slate-300">
+                                        <tr class="text-gray-600 dark:text-gray-300">
                                             <td class="px-4 py-2 font-medium">{{ $row['date'] }}</td>
                                             <td class="px-4 py-2">{{ $row['posts'] }}</td>
                                             <td class="px-4 py-2">{{ $row['comments'] }}</td>
@@ -152,22 +142,22 @@
                 </div>
             </div>
 
-            <div class="rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-sm ring-1 ring-slate-100 dark:border-slate-700 dark:bg-slate-900/80 dark:ring-slate-800/80">
-                <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                     Engagement
                 </h3>
-                <div class="mt-5 space-y-5 text-sm">
+                <div class="mt-5 space-y-6 text-sm">
                     <div>
-                        <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                            Post Status
+                        <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                            Status Post
                         </h4>
                         <div class="mt-3 space-y-2">
                             @foreach (($engagement['posts'] ?? []) as $label => $value)
-                                <div class="flex items-center justify-between rounded-xl border border-slate-100 bg-white/60 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/60">
-                                    <span class="capitalize text-slate-600 dark:text-slate-300">
+                                <div class="flex items-center justify-between rounded-xl border border-gray-100 bg-white px-3 py-2 dark:border-gray-800 dark:bg-gray-900/60">
+                                    <span class="capitalize text-gray-600 dark:text-gray-300">
                                         {{ str_replace('_', ' ', $label) }}
                                     </span>
-                                    <span class="font-semibold text-slate-900 dark:text-white">
+                                    <span class="font-semibold text-gray-900 dark:text-white">
                                         {{ number_format($value) }}
                                     </span>
                                 </div>
@@ -175,24 +165,24 @@
                         </div>
                     </div>
                     <div>
-                        <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                        <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                             Komentar
                         </h4>
                         <div class="mt-3 space-y-2">
                             @foreach (($engagement['comments'] ?? []) as $label => $value)
-                                <div class="flex items-center justify-between rounded-xl border border-slate-100 bg-white/60 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/60">
-                                    <span class="capitalize text-slate-600 dark:text-slate-300">
+                                <div class="flex items-center justify-between rounded-xl border border-gray-100 bg-white px-3 py-2 dark:border-gray-800 dark:bg-gray-900/60">
+                                    <span class="capitalize text-gray-600 dark:text-gray-300">
                                         {{ str_replace('_', ' ', $label) }}
                                     </span>
-                                    <span class="font-semibold text-slate-900 dark:text-white">
+                                    <span class="font-semibold text-gray-900 dark:text-white">
                                         {{ number_format($value) }}
                                     </span>
                                 </div>
                             @endforeach
                         </div>
-                        <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-300">
+                        <p class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-300">
                             Comment Conversion Rate: <span class="font-semibold">{{ $rates['comment_conversion_rate'] ?? 0 }}%</span>
-                        </div>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -200,36 +190,36 @@
 
         <div class="space-y-4">
             <div class="flex items-center justify-between">
-                <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                     Top Performing Posts
                 </h3>
-                <span class="text-xs text-slate-400">
-                    Berdasarkan jumlah view terbanyak.
+                <span class="text-xs text-gray-400">
+                    Diurutkan berdasarkan jumlah view terbanyak.
                 </span>
             </div>
 
-            <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white/80 shadow-sm ring-1 ring-slate-100 dark:border-slate-700 dark:bg-slate-900/80 dark:ring-slate-800/80">
-                <table class="min-w-full divide-y divide-slate-100 text-sm dark:divide-slate-800">
-                    <thead class="bg-slate-50 dark:bg-slate-900/60">
-                        <tr>
-                            <th class="px-4 py-3 text-left font-medium text-slate-500">Judul</th>
-                            <th class="px-4 py-3 text-left font-medium text-slate-500">Status</th>
-                            <th class="px-4 py-3 text-right font-medium text-slate-500">Views</th>
-                            <th class="px-4 py-3 text-right font-medium text-slate-500">Publikasi</th>
+            <div class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                <table class="min-w-full divide-y divide-gray-100 text-sm dark:divide-gray-800">
+                    <thead class="bg-gray-50 dark:bg-gray-900/60">
+                        <tr class="text-left text-gray-500 dark:text-gray-400">
+                            <th class="px-4 py-3 font-medium">Judul</th>
+                            <th class="px-4 py-3 font-medium">Status</th>
+                            <th class="px-4 py-3 text-right font-medium">Views</th>
+                            <th class="px-4 py-3 text-right font-medium">Publikasi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                         @forelse ($topPosts as $post)
-                            <tr class="text-slate-600 dark:text-slate-300">
-                                <td class="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                            <tr class="text-gray-600 dark:text-gray-300">
+                                <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
                                     {{ $post['title'] }}
                                 </td>
                                 <td class="px-4 py-3">
-                                    <span class="rounded-full bg-slate-100 px-2.5 py-1 text-2xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800 dark:text-slate-300">
+                                    <span class="rounded-full bg-gray-100 px-2.5 py-1 text-2xs font-semibold uppercase tracking-wide text-gray-500 dark:bg-gray-800 dark:text-gray-300">
                                         {{ strtoupper($post['status']) }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-right font-semibold text-slate-900 dark:text-white">
+                                <td class="px-4 py-3 text-right font-semibold text-gray-900 dark:text-white">
                                     {{ number_format($post['view_count'] ?? 0) }}
                                 </td>
                                 <td class="px-4 py-3 text-right">
@@ -242,7 +232,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-4 py-4 text-center text-sm text-slate-400">
+                                <td colspan="4" class="px-4 py-4 text-center text-sm text-gray-400">
                                     Belum ada data views post.
                                 </td>
                             </tr>
@@ -253,3 +243,4 @@
         </div>
     </div>
 </x-filament-panels::page>
+

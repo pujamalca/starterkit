@@ -2,7 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>http://localhost</loc>
-    <lastmod>2025-10-28T15:53:35+00:00</lastmod>
+    <lastmod>2025-10-28T16:10:12+00:00</lastmod>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>http://localhost/posts/tenetur-sed-sint-blanditiis-molestiae-maxime-mollitia-sit</loc>
+    <lastmod>2025-10-28T16:10:10+00:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://localhost/posts/reprehenderit-quia-similique-deserunt-fugiat-nemo-quaerat</loc>
+    <lastmod>2025-10-28T16:10:11+00:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://localhost/posts/aliquam-qui-iure-non</loc>
+    <lastmod>2025-10-28T16:10:11+00:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://localhost/posts/et-ducimus-dolorum-qui-officiis-nihil-reprehenderit-reprehenderit-atque</loc>
+    <lastmod>2025-10-28T16:10:11+00:00</lastmod>
+    <priority>0.8</priority>
   </url>
 </urlset>
