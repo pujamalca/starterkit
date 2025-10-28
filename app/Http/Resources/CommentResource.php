@@ -4,8 +4,28 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use OpenApi\Annotations as OA;
 
 /** @mixin \App\Models\Comment */
+/**
+ * @OA\Schema(
+ *     schema="CommentResource",
+ *     title="Comment",
+ *     @OA\Property(property="id", type="integer", example=45),
+ *     @OA\Property(property="content", type="string", example="Komentar yang sangat membantu"),
+ *     @OA\Property(property="is_approved", type="boolean", example=true),
+ *     @OA\Property(property="guest_name", type="string", nullable=true),
+ *     @OA\Property(property="guest_email", type="string", nullable=true),
+ *     @OA\Property(property="parent_id", type="integer", nullable=true),
+ *     @OA\Property(property="metadata", type="object", nullable=true),
+ *     @OA\Property(property="commentable_type", type="string", example="App\\Models\\Post"),
+ *     @OA\Property(property="commentable_id", type="integer", example=12),
+ *     @OA\Property(property="replies_count", type="integer", nullable=true),
+ *     @OA\Property(property="created_at", type="string", format="date-time"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time"),
+ *     @OA\Property(property="user", ref="#/components/schemas/UserResource")
+ * )
+ */
 class CommentResource extends JsonResource
 {
     /**

@@ -11,7 +11,14 @@ use App\Services\CommentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ *     name="Comments",
+ *     description="Manajemen komentar pada konten."
+ * )
+ */
 class CommentController extends Controller
 {
     public function __construct(
@@ -19,6 +26,29 @@ class CommentController extends Controller
     ) {
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/comments",
+     *     summary="Daftar komentar",
+     *     tags={"Comments"},
+     *     @OA\Parameter(name="status", in="query", @OA\Schema(type="string", enum={"approved","pending"})),
+     *     @OA\Parameter(name="commentable_type", in="query", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="commentable_id", in="query", @OA\Schema(type="integer")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Daftar komentar berhasil diambil",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/CommentResource")
+     *             ),
+     *             @OA\Property(property="links", type="object"),
+     *             @OA\Property(property="meta", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request): JsonResponse
     {
         $filters = $request->only([
@@ -39,6 +69,34 @@ class CommentController extends Controller
         return CommentResource::collection($comments)->response();
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/posts/{post}/comments",
+     *     summary="Daftar komentar untuk post",
+     *     tags={"Comments"},
+     *     @OA\Parameter(
+     *         name="post",
+     *         in="path",
+     *         required=true,
+     *         description="Slug post",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Daftar komentar berhasil diambil",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/CommentResource")
+     *             ),
+     *             @OA\Property(property="links", type="object"),
+     *             @OA\Property(property="meta", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Post tidak ditemukan")
+     * )
+     */
     public function forPost(Request $request, Post $post): JsonResponse
     {
         $user = $request->user();
@@ -56,6 +114,42 @@ class CommentController extends Controller
         return CommentResource::collection($comments)->response();
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/posts/{post}/comments",
+     *     summary="Kirim komentar pada post",
+     *     tags={"Comments"},
+     *     @OA\Parameter(
+     *         name="post",
+     *         in="path",
+     *         required=true,
+     *         description="Slug post",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"content"},
+     *             @OA\Property(property="content", type="string", example="Komentar yang sangat membantu"),
+     *             @OA\Property(property="parent_id", type="integer", nullable=true),
+     *             @OA\Property(property="guest_name", type="string", nullable=true),
+     *             @OA\Property(property="guest_email", type="string", format="email", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Komentar tersimpan (langsung approve)",
+     *         @OA\JsonContent(ref="#/components/schemas/CommentResource")
+     *     ),
+     *     @OA\Response(
+     *         response=202,
+     *         description="Komentar tersimpan dan menunggu moderasi",
+     *         @OA\JsonContent(ref="#/components/schemas/CommentResource")
+     *     ),
+     *     @OA\Response(response=404, description="Post tidak ditemukan"),
+     *     @OA\Response(response=422, description="Validasi gagal")
+     * )
+     */
     public function store(StoreCommentRequest $request, Post $post): JsonResponse
     {
         $user = $request->user();
@@ -81,6 +175,27 @@ class CommentController extends Controller
         return $response->setStatusCode($status);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/comments/{comment}/approve",
+     *     summary="Approve komentar",
+     *     tags={"Comments"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="comment",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Komentar berhasil di-approve",
+     *         @OA\JsonContent(ref="#/components/schemas/CommentResource")
+     *     ),
+     *     @OA\Response(response=403, description="Tidak memiliki izin"),
+     *     @OA\Response(response=404, description="Komentar tidak ditemukan")
+     * )
+     */
     public function approve(Request $request, Comment $comment): JsonResponse
     {
         $this->ensureCanModerate($request);
@@ -90,6 +205,23 @@ class CommentController extends Controller
         return CommentResource::make($comment)->response();
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/comments/{comment}",
+     *     summary="Hapus komentar",
+     *     tags={"Comments"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="comment",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=204, description="Komentar dihapus"),
+     *     @OA\Response(response=403, description="Tidak memiliki izin"),
+     *     @OA\Response(response=404, description="Komentar tidak ditemukan")
+     * )
+     */
     public function destroy(Request $request, Comment $comment): JsonResponse
     {
         $this->ensureCanModerate($request);

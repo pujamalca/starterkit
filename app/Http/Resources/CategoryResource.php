@@ -4,8 +4,28 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use OpenApi\Annotations as OA;
 
 /** @mixin \App\Models\Category */
+/**
+ * @OA\Schema(
+ *     schema="CategoryResource",
+ *     title="Category",
+ *     @OA\Property(property="id", type="integer", example=3),
+ *     @OA\Property(property="name", type="string", example="News"),
+ *     @OA\Property(property="slug", type="string", example="news"),
+ *     @OA\Property(property="description", type="string", nullable=true),
+ *     @OA\Property(property="image", type="string", nullable=true),
+ *     @OA\Property(property="icon", type="string", nullable=true),
+ *     @OA\Property(property="color", type="string", nullable=true, example="#F59E0B"),
+ *     @OA\Property(property="sort_order", type="integer", example=1),
+ *     @OA\Property(property="is_featured", type="boolean"),
+ *     @OA\Property(property="is_active", type="boolean"),
+ *     @OA\Property(property="posts_count", type="integer", nullable=true),
+ *     @OA\Property(property="created_at", type="string", format="date-time"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time")
+ * )
+ */
 class CategoryResource extends JsonResource
 {
     /**

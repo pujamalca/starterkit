@@ -11,7 +11,14 @@ use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ *     name="Posts",
+ *     description="Manajemen dan publikasi konten post."
+ * )
+ */
 class PostController extends Controller
 {
     public function __construct(
@@ -19,6 +26,31 @@ class PostController extends Controller
     ) {
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/posts",
+     *     summary="Daftar postingan publik",
+     *     tags={"Posts"},
+     *     @OA\Parameter(name="search", in="query", description="Kata kunci pencarian", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="category_slug", in="query", description="Filter berdasarkan slug kategori", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="tag", in="query", description="Filter berdasarkan slug atau ID tag", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="author", in="query", description="Filter berdasarkan username/email penulis", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="per_page", in="query", description="Jumlah data per halaman", @OA\Schema(type="integer", default=15)),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Daftar post berhasil diambil",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/PostResource")
+     *             ),
+     *             @OA\Property(property="links", type="object"),
+     *             @OA\Property(property="meta", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request): JsonResponse
     {
         $filters = $request->only([
@@ -39,6 +71,26 @@ class PostController extends Controller
         return PostResource::collection($posts)->response();
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/posts/{post}",
+     *     summary="Detail post",
+     *     tags={"Posts"},
+     *     @OA\Parameter(
+     *         name="post",
+     *         in="path",
+     *         description="Slug post",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Detail post berhasil diambil",
+     *         @OA\JsonContent(ref="#/components/schemas/PostResource")
+     *     ),
+     *     @OA\Response(response=404, description="Post tidak ditemukan")
+     * )
+     */
     public function show(Request $request, Post $post): PostResource
     {
         $user = $request->user();
@@ -57,6 +109,26 @@ class PostController extends Controller
         return PostResource::make($post->loadMissing(['category', 'author', 'tags']));
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/posts",
+     *     summary="Buat post baru",
+     *     tags={"Posts"},
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/PostResource")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Post berhasil dibuat",
+     *         @OA\JsonContent(ref="#/components/schemas/PostResource")
+     *     ),
+     *     @OA\Response(response=401, description="Tidak terautentikasi"),
+     *     @OA\Response(response=403, description="Tidak memiliki izin"),
+     *     @OA\Response(response=422, description="Validasi gagal")
+     * )
+     */
     public function store(StorePostRequest $request): JsonResponse
     {
         $post = $this->postService->create($request->user(), $request->validated());
@@ -66,6 +138,33 @@ class PostController extends Controller
             ->setStatusCode(Response::HTTP_CREATED);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/v1/posts/{post}",
+     *     summary="Perbarui post",
+     *     tags={"Posts"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="post",
+     *         in="path",
+     *         description="Slug post",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/PostResource")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Post berhasil diperbarui",
+     *         @OA\JsonContent(ref="#/components/schemas/PostResource")
+     *     ),
+     *     @OA\Response(response=401, description="Tidak terautentikasi"),
+     *     @OA\Response(response=403, description="Tidak memiliki izin"),
+     *     @OA\Response(response=404, description="Post tidak ditemukan")
+     * )
+     */
     public function update(UpdatePostRequest $request, Post $post): JsonResponse
     {
         $post = $this->postService->update($post, $request->validated());
@@ -75,6 +174,25 @@ class PostController extends Controller
             ->setStatusCode(Response::HTTP_OK);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/posts/{post}",
+     *     summary="Hapus post",
+     *     tags={"Posts"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="post",
+     *         in="path",
+     *         required=true,
+     *         description="Slug post",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(response=204, description="Post dihapus"),
+     *     @OA\Response(response=401, description="Tidak terautentikasi"),
+     *     @OA\Response(response=403, description="Tidak memiliki izin"),
+     *     @OA\Response(response=404, description="Post tidak ditemukan")
+     * )
+     */
     public function destroy(Request $request, Post $post): JsonResponse
     {
         $user = $request->user();

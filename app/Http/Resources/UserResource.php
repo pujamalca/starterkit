@@ -4,8 +4,29 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use OpenApi\Annotations as OA;
 
 /** @mixin \App\Models\User */
+/**
+ * @OA\Schema(
+ *     schema="UserResource",
+ *     title="User",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="name", type="string", example="Admin User"),
+ *     @OA\Property(property="username", type="string", example="admin"),
+ *     @OA\Property(property="email", type="string", format="email", example="admin@example.com"),
+ *     @OA\Property(property="avatar", type="string", nullable=true, example="https://..."),
+ *     @OA\Property(property="bio", type="string", nullable=true),
+ *     @OA\Property(property="phone", type="string", nullable=true),
+ *     @OA\Property(property="roles", type="array", @OA\Items(type="string")),
+ *     @OA\Property(property="permissions", type="array", @OA\Items(type="string")),
+ *     @OA\Property(property="preferences", type="object", nullable=true),
+ *     @OA\Property(property="is_active", type="boolean", example=true),
+ *     @OA\Property(property="last_login_at", type="string", format="date-time", nullable=true),
+ *     @OA\Property(property="created_at", type="string", format="date-time"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time")
+ * )
+ */
 class UserResource extends JsonResource
 {
     /**
