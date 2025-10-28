@@ -15,7 +15,9 @@
       "Bash(npm uninstall:*)",
       "Bash(npm install:*)",
       "Bash(composer require:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(python -c \"import sys, json; print(json.load(sys.stdin)[''''meta''''][''''token''''])\")",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []

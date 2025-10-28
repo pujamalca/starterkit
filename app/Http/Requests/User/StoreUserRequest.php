@@ -22,6 +22,26 @@ class StoreUserRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Nama wajib diisi.',
+            'name.max' => 'Nama maksimal :max karakter.',
+            'username.max' => 'Username maksimal :max karakter.',
+            'username.alpha_dash' => 'Username hanya boleh berisi huruf, angka, dash dan underscore.',
+            'username.unique' => 'Username sudah digunakan.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.max' => 'Email maksimal :max karakter.',
+            'email.unique' => 'Email sudah terdaftar.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal :min karakter.',
+            'password.max' => 'Password maksimal :max karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'phone.max' => 'Nomor telepon maksimal :max karakter.',
+        ];
+    }
+
     protected function prepareForValidation(): void
     {
         if ($this->has('email')) {

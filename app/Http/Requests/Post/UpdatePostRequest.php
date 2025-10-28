@@ -65,6 +65,23 @@ class UpdatePostRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Judul wajib diisi.',
+            'title.max' => 'Judul maksimal :max karakter.',
+            'slug.max' => 'Slug maksimal :max karakter.',
+            'slug.unique' => 'Slug sudah digunakan.',
+            'content.required' => 'Konten wajib diisi.',
+            'category_id.exists' => 'Kategori yang dipilih tidak valid.',
+            'tags.*.exists' => 'Tag yang dipilih tidak valid.',
+            'status.in' => 'Status yang dipilih tidak valid.',
+            'type.in' => 'Tipe yang dipilih tidak valid.',
+            'seo_title.max' => 'Judul SEO maksimal :max karakter.',
+            'seo_description.max' => 'Deskripsi SEO maksimal :max karakter.',
+        ];
+    }
+
     protected function prepareForValidation(): void
     {
         if ($this->has('status') && blank($this->input('status'))) {

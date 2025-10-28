@@ -17,14 +17,14 @@ class StorePostRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:200'],
-            'slug' => ['nullable', 'string', 'max:200', 'unique:posts,slug'],
+            'slug' => ['required', 'string', 'max:200', 'unique:posts,slug'],
             'excerpt' => ['nullable', 'string'],
             'content' => ['required', 'string'],
-            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'category_id' => ['required', 'integer', 'exists:categories,id'],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['integer', 'exists:tags,id'],
-            'status' => ['nullable', Rule::in(['draft', 'published', 'scheduled', 'archived'])],
-            'type' => ['nullable', Rule::in(['article', 'page', 'news'])],
+            'status' => ['required', Rule::in(['draft', 'published', 'scheduled', 'archived'])],
+            'type' => ['required', Rule::in(['article', 'page', 'news'])],
             'published_at' => ['nullable', 'date'],
             'scheduled_at' => ['nullable', 'date', 'after:now'],
             'is_featured' => ['nullable', 'boolean'],
@@ -37,6 +37,28 @@ class StorePostRequest extends FormRequest
             'seo_keywords' => ['nullable', 'string'],
             'og_image' => ['nullable', 'string', 'max:255'],
             'metadata' => ['nullable', 'array'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Judul wajib diisi.',
+            'title.max' => 'Judul maksimal :max karakter.',
+            'slug.required' => 'Slug wajib diisi.',
+            'slug.max' => 'Slug maksimal :max karakter.',
+            'slug.unique' => 'Slug sudah digunakan.',
+            'content.required' => 'Konten wajib diisi.',
+            'category_id.required' => 'Kategori wajib dipilih.',
+            'category_id.exists' => 'Kategori yang dipilih tidak valid.',
+            'tags.*.exists' => 'Tag yang dipilih tidak valid.',
+            'status.required' => 'Status wajib dipilih.',
+            'status.in' => 'Status yang dipilih tidak valid.',
+            'type.required' => 'Tipe wajib dipilih.',
+            'type.in' => 'Tipe yang dipilih tidak valid.',
+            'scheduled_at.after' => 'Jadwal publikasi harus setelah waktu sekarang.',
+            'seo_title.max' => 'Judul SEO maksimal :max karakter.',
+            'seo_description.max' => 'Deskripsi SEO maksimal :max karakter.',
         ];
     }
 

@@ -105,16 +105,22 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'login' => ['required', 'string'],
-            'password' => ['required', 'string'],
+            'login' => ['required', 'string', 'email'],
+            'password' => ['required', 'string', 'min:8'],
             'device_name' => ['nullable', 'string', 'max:120'],
+        ], [
+            'login.required' => 'Email wajib diisi.',
+            'login.email' => 'Format email tidak valid.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal :min karakter.',
+            'device_name.max' => 'Nama perangkat maksimal :max karakter.',
         ]);
 
         $user = $this->userService->attemptLogin($validated['login'], $validated['password']);
 
         if (! $user) {
             throw ValidationException::withMessages([
-                'login' => [__('auth.failed')],
+                'login' => ['Email atau password yang Anda masukkan salah.'],
             ]);
         }
 

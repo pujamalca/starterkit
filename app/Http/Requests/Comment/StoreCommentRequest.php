@@ -28,6 +28,13 @@ class StoreCommentRequest extends FormRequest
     {
         return [
             'content.required' => 'Konten komentar wajib diisi.',
+            'content.min' => 'Konten komentar minimal :min karakter.',
+            'parent_id.exists' => 'Komentar induk tidak ditemukan.',
+            'guest_name.required' => 'Nama wajib diisi untuk komentar tamu.',
+            'guest_name.max' => 'Nama maksimal :max karakter.',
+            'guest_email.required' => 'Email wajib diisi untuk komentar tamu.',
+            'guest_email.email' => 'Format email tidak valid.',
+            'guest_email.max' => 'Email maksimal :max karakter.',
         ];
     }
 
