@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Jobs\GenerateSitemap;
 use App\Models\Post;
 use App\Models\User;
+use App\Notifications\PostPublishedNotification;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
@@ -42,7 +44,11 @@ class PostService
 
         $this->syncRelations($post, $data);
 
-        return $post->load(['category', 'author', 'tags']);
+        $post->load(['category', 'author', 'tags']);
+
+        $this->afterPersist($post, null);
+
+        return $post;
     }
 
     public function update(Post $post, array $data): Post
@@ -54,12 +60,22 @@ class PostService
 
         $this->syncRelations($post, $data);
 
-        return $post->load(['category', 'author', 'tags']);
+        $post->load(['category', 'author', 'tags']);
+
+        $this->afterPersist($post, $previousStatus);
+
+        return $post;
     }
 
     public function delete(Post $post): void
     {
+        $wasPublished = $post->status === 'published';
+
         $post->delete();
+
+        if ($wasPublished) {
+            GenerateSitemap::dispatch();
+        }
     }
 
     protected function paginateWithFilters(array $filters): LengthAwarePaginator
@@ -189,6 +205,23 @@ class PostService
     {
         if (array_key_exists('tags', $data)) {
             $post->tags()->sync(Arr::wrap($data['tags']));
+        }
+    }
+
+    protected function afterPersist(Post $post, ?string $previousStatus): void
+    {
+        if ($post->status === 'published' && $previousStatus !== 'published') {
+            $this->notifyPublished($post);
+            GenerateSitemap::dispatch();
+        }
+    }
+
+    protected function notifyPublished(Post $post): void
+    {
+        $author = $post->author;
+
+        if ($author) {
+            $author->notify(new PostPublishedNotification($post));
         }
     }
 }

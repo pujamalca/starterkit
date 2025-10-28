@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\SendCommentNotification;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
@@ -75,7 +76,11 @@ class CommentService
             'metadata' => Arr::get($data, 'metadata', []),
         ]);
 
-        return $comment->fresh(['user', 'commentable']);
+        $comment = $comment->fresh(['user', 'commentable', 'parent.user']);
+
+        SendCommentNotification::dispatch($comment);
+
+        return $comment;
     }
 
     public function approve(Comment $comment, User $user): Comment

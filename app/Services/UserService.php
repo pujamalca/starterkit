@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Notifications\WelcomeNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -22,6 +23,8 @@ class UserService
         ]);
 
         event(new Registered($user));
+
+        $user->notify(new WelcomeNotification());
 
         return $user;
     }
