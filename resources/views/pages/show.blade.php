@@ -78,76 +78,136 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen py-8 px-4">
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    {{-- Header / Navbar (Placeholder) --}}
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="text-2xl font-bold text-gray-900">
+                    Logo / Brand
+                </div>
+                <nav class="hidden md:flex items-center gap-6">
+                    <a href="/" class="text-gray-600 hover:text-gray-900 transition-colors">Home</a>
+                    <a href="/pages/tentang-kami" class="text-gray-600 hover:text-gray-900 transition-colors">Tentang</a>
+                    <a href="/pages/kontak" class="text-gray-600 hover:text-gray-900 transition-colors">Kontak</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
     @if (isset($preview) && $preview)
-        <div class="max-w-4xl mx-auto mb-4">
-            <div class="bg-amber-50 border-l-4 border-amber-500 text-amber-900 px-6 py-4 rounded-r-lg shadow-sm">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        <div class="bg-amber-50 border-b border-amber-200">
+            <div class="container mx-auto px-4 py-3">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-amber-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                     </svg>
                     <div>
-                        <p class="font-semibold">Mode Preview</p>
-                        <p class="text-sm text-amber-800">Ini adalah tampilan preview halaman. Perubahan belum dipublikasikan.</p>
+                        <span class="font-semibold text-amber-900">Mode Preview</span>
+                        <span class="text-sm text-amber-700 ml-2">- Perubahan belum dipublikasikan</span>
                     </div>
                 </div>
             </div>
         </div>
     @endif
 
-    <main class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
-        <header class="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-12">
-            <h1 class="text-4xl md:text-5xl font-bold mb-3">{{ $page->title }}</h1>
+    {{-- Main Content --}}
+    <main class="flex-grow">
+        {{-- Page Header --}}
+        <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-12">
+            <div class="container mx-auto px-4">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">{{ $page->title }}</h1>
 
-            <div class="flex flex-wrap items-center gap-4 text-blue-100">
-                @if ($page->published_at)
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        <span class="text-sm">{{ $page->published_at->translatedFormat('d F Y') }}</span>
-                    </div>
-                @endif
-
-                @if ($page->status === 'draft')
-                    <span class="bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                        Draft
-                    </span>
-                @elseif ($page->status === 'scheduled')
-                    <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                        Terjadwal: {{ $page->scheduled_at?->translatedFormat('d F Y H:i') }}
-                    </span>
-                @endif
-            </div>
-        </header>
-
-        <article class="prose-custom px-8 md:px-12 py-12">
-            {!! $page->content !!}
-        </article>
-
-        <footer class="bg-gray-50 px-8 md:px-12 py-8 border-t border-gray-200">
-            <div class="flex items-center justify-between flex-wrap gap-4">
-                <div class="text-sm text-gray-600">
-                    @if ($page->author)
-                        <p>Dibuat oleh <span class="font-semibold text-gray-900">{{ $page->author->name }}</span></p>
+                <div class="flex flex-wrap items-center gap-4 text-blue-100">
+                    @if ($page->published_at)
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span class="text-sm">{{ $page->published_at->translatedFormat('d F Y') }}</span>
+                        </div>
                     @endif
-                    <p class="mt-1">Terakhir diperbarui: {{ $page->updated_at->translatedFormat('d F Y H:i') }}</p>
-                </div>
 
-                @if ($page->status === 'published')
-                    <a href="{{ route('pages.show', $page->slug) }}" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                        </svg>
-                        Lihat Halaman Publik
-                    </a>
-                @endif
+                    @if ($page->status === 'draft')
+                        <span class="bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                            Draft
+                        </span>
+                    @elseif ($page->status === 'scheduled')
+                        <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                            Terjadwal: {{ $page->scheduled_at?->translatedFormat('d F Y H:i') }}
+                        </span>
+                    @endif
+                </div>
             </div>
-        </footer>
+        </div>
+
+        {{-- Page Content --}}
+        <div class="container mx-auto px-4 py-12">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 md:p-12">
+                <article class="prose-custom max-w-none">
+                    {!! $page->content !!}
+                </article>
+            </div>
+
+            {{-- Page Meta Info --}}
+            @if ($page->author)
+                <div class="mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+                    <div class="flex items-center justify-between flex-wrap gap-4 text-sm text-gray-600">
+                        <div>
+                            <p>Dibuat oleh <span class="font-semibold text-gray-900">{{ $page->author->name }}</span></p>
+                            <p class="mt-1">Terakhir diperbarui: {{ $page->updated_at->translatedFormat('d F Y H:i') }}</p>
+                        </div>
+
+                        @if ($page->status === 'published' && isset($preview) && $preview)
+                            <a href="{{ route('pages.show', $page->slug) }}" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                </svg>
+                                Lihat Halaman Publik
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            @endif
+        </div>
     </main>
 
-    <div class="text-center mt-8 text-sm text-gray-500">
-        <p>&copy; {{ now()->year }} PT Perusahaan Indonesia. All rights reserved.</p>
-    </div>
+    {{-- Footer --}}
+    <footer class="bg-gray-900 text-white mt-auto">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                {{-- Footer Column 1 --}}
+                <div>
+                    <h3 class="text-lg font-bold mb-4">PT Perusahaan Indonesia</h3>
+                    <p class="text-gray-400 text-sm">
+                        Solusi digital terpercaya untuk transformasi bisnis Anda.
+                    </p>
+                </div>
+
+                {{-- Footer Column 2 --}}
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Link Cepat</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/pages/tentang-kami" class="text-gray-400 hover:text-white transition-colors">Tentang Kami</a></li>
+                        <li><a href="/pages/kontak" class="text-gray-400 hover:text-white transition-colors">Kontak</a></li>
+                        <li><a href="/pages/faq" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+
+                {{-- Footer Column 3 --}}
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Legal</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/pages/kebijakan-privasi" class="text-gray-400 hover:text-white transition-colors">Kebijakan Privasi</a></li>
+                        <li><a href="/pages/syarat-ketentuan" class="text-gray-400 hover:text-white transition-colors">Syarat & Ketentuan</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
+                <p>&copy; {{ now()->year }} PT Perusahaan Indonesia. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
