@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Filament\Admin\Widgets\AnalyticsTrendsChart;
+use App\Filament\Admin\Widgets\DoctorLatencyChart;
 use App\Models\Activity;
 use App\Models\Page;
 use App\Repositories\PageRepository;
@@ -10,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -96,5 +99,8 @@ class AppServiceProvider extends ServiceProvider
             $repository = app(PageRepository::class);
             $repository->forget($page, $page->getOriginal('slug'));
         });
+
+        Livewire::component('filament.admin.widgets.doctor-latency-chart', DoctorLatencyChart::class);
+        Livewire::component('filament.admin.widgets.analytics-trends-chart', AnalyticsTrendsChart::class);
     }
 }
