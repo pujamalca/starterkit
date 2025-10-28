@@ -2,41 +2,51 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\DatabaseBackupJob;
+use App\Services\DatabaseBackupService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Throwable;
 
-#[AsCommand(name: 'system:backup', description: 'Trigger application backup if the backup:run command is available.')]
+#[AsCommand(name: 'system:backup', description: 'Buat cadangan database ke folder storage/app/backups.')]
 class BackupDatabaseCommand extends Command
 {
-    protected $signature = 'system:backup {--only-db : Run database backup only} {--queue : Queue the backup command instead of running synchronously}';
+    protected $signature = 'system:backup {format=json : Format backup (json, csv, sql)} {--queue : Jalankan proses backup melalui antrean}';
 
-    public function handle(): int
+    public function handle(DatabaseBackupService $service): int
     {
-        if (! array_key_exists('backup:run', Artisan::all())) {
-            $this->warn('Perintah backup:run tidak tersedia. Pastikan paket spatie/laravel-backup terpasang.');
+        $format = strtolower((string) $this->argument('format'));
+
+        if (! in_array($format, DatabaseBackupService::FORMATS, true)) {
+            $this->error('Format tidak valid. Gunakan: '.implode(', ', DatabaseBackupService::FORMATS).'.');
 
             return self::FAILURE;
         }
 
-        $params = [];
-
-        if ($this->option('only-db')) {
-            $params['--only-db'] = true;
-        }
-
         if ($this->option('queue')) {
-            Artisan::queue('backup:run', $params);
-            $this->info('Perintah backup:run telah dimasukkan ke dalam antrean.');
+            DatabaseBackupJob::dispatch($format);
+
+            $this->info(sprintf(
+                'Backup %s dijadwalkan. File akan tersimpan di storage/app/backups.',
+                strtoupper($format)
+            ));
 
             return self::SUCCESS;
         }
 
-        $status = Artisan::call('backup:run', $params);
+        try {
+            $relativePath = $service->createBackup($format);
+            $fullPath = storage_path("app/{$relativePath}");
 
-        $this->line(Artisan::output());
+            $this->info("Backup {$format} selesai. File tersimpan di {$fullPath}");
 
-        return $status === 0 ? self::SUCCESS : self::FAILURE;
+            return self::SUCCESS;
+        } catch (Throwable $throwable) {
+            report($throwable);
+
+            $this->error('Backup gagal: '.$throwable->getMessage());
+
+            return self::FAILURE;
+        }
     }
 }
-

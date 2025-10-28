@@ -5,10 +5,14 @@ use App\Http\Middleware\CheckUserActive;
 use App\Http\Middleware\ForceJsonResponse;
 use App\Http\Middleware\LogUserActivity;
 use App\Http\Middleware\SetLocale;
+use App\Services\DatabaseBackupService;
+use App\Settings\BackupSettings;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -42,6 +46,50 @@ return Application::configure(basePath: dirname(__DIR__))
                 ForceJsonResponse::class,
             ],
         );
+    })
+    ->withSchedule(function (Schedule $schedule): void {
+        /** @var BackupSettings $settings */
+        $settings = app(BackupSettings::class);
+
+        if (! $settings->schedule_enabled || $settings->schedule_frequency === 'none') {
+            return;
+        }
+
+        $format = strtolower($settings->default_format ?? 'json');
+        if (! in_array($format, DatabaseBackupService::FORMATS, true)) {
+            $format = 'json';
+        }
+
+        $event = $schedule->command('system:backup', [
+            'format' => $format,
+            '--queue' => true,
+        ])->withoutOverlapping()->onOneServer()->description('Scheduled database backup');
+
+        $time = $settings->schedule_time ?: '02:00';
+
+        switch ($settings->schedule_frequency) {
+            case 'weekly':
+                $dayMap = [
+                    'monday' => Carbon::MONDAY,
+                    'tuesday' => Carbon::TUESDAY,
+                    'wednesday' => Carbon::WEDNESDAY,
+                    'thursday' => Carbon::THURSDAY,
+                    'friday' => Carbon::FRIDAY,
+                    'saturday' => Carbon::SATURDAY,
+                    'sunday' => Carbon::SUNDAY,
+                ];
+                $weekday = $dayMap[strtolower((string) $settings->schedule_day_of_week)] ?? Carbon::MONDAY;
+                $event->weeklyOn($weekday, $time);
+                break;
+            case 'monthly':
+                $dayOfMonth = max(1, min(28, (int) $settings->schedule_day_of_month));
+                $event->monthlyOn($dayOfMonth, $time);
+                break;
+            case 'daily':
+            default:
+                $event->dailyAt($time);
+                break;
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Handle exception untuk API routes dengan JSON response
