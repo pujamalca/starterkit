@@ -17,7 +17,9 @@
       "Bash(composer require:*)",
       "Bash(cat:*)",
       "Bash(python -c \"import sys, json; print(json.load(sys.stdin)[''''meta''''][''''token''''])\")",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "WebSearch",
+      "Bash(composer update:*)"
     ],
     "deny": [],
     "ask": []

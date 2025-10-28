@@ -10,6 +10,8 @@ class CreatePage extends CreateRecord
 {
     protected static string $resource = PageResource::class;
 
+    protected static bool $shouldUseFormLayout = false;
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['author_id'] = auth()->id();

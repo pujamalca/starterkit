@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $page->seo_title ?? $page->title }}</title>
+    <title>{{ isset($preview) && $preview ? '[PREVIEW] ' : '' }}{{ $page->seo_title ?? $page->title }}</title>
     @if ($page->seo_description)
         <meta name="description" content="{{ $page->seo_description }}">
     @endif
@@ -12,12 +12,27 @@
     @endif
 </head>
 <body style="font-family: system-ui, sans-serif; line-height: 1.7; margin: 0; padding: 2rem; background-color: #f9fafb;">
+    @if (isset($preview) && $preview)
+        <div style="max-width: 760px; margin: 0 auto 1rem; background: #fef3c7; color: #92400e; padding: 1rem 1.5rem; border-radius: 0.75rem; border-left: 4px solid #f59e0b; font-size: 0.95rem;">
+            <strong>Mode Preview:</strong> Ini adalah tampilan preview halaman. Perubahan belum dipublikasikan.
+        </div>
+    @endif
+
     <main style="max-width: 760px; margin: 0 auto; background: #fff; padding: 3rem; border-radius: 1.5rem; box-shadow: 0 20px 45px rgba(15,23,42,0.08);">
         <header style="margin-bottom: 2rem;">
             <h1 style="font-size: 2.5rem; margin-bottom: .5rem; color: #0f172a;">{{ $page->title }}</h1>
             @if ($page->published_at)
                 <p style="color: #64748b; font-size: .95rem;">
                     Dipublikasikan {{ $page->published_at->translatedFormat('d F Y') }}
+                </p>
+            @endif
+            @if ($page->status === 'draft')
+                <p style="color: #f59e0b; font-size: .95rem; font-weight: 600;">
+                    Status: Draft
+                </p>
+            @elseif ($page->status === 'scheduled')
+                <p style="color: #3b82f6; font-size: .95rem; font-weight: 600;">
+                    Status: Terjadwal untuk {{ $page->scheduled_at?->translatedFormat('d F Y H:i') }}
                 </p>
             @endif
         </header>
