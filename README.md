@@ -5,6 +5,7 @@ Starter kit ini menyiapkan panel admin Filament 4 dengan sistem peran, manajemen
 ## Fitur Inti
 - Role & permission menggunakan Spatie Laravel Permission.
 - Panel admin Filament (path `/admin`) dengan dashboard, manajemen pengguna, aktivitas, kategori, tag, posting, dan ekspor Excel.
+- Halaman statis (Pages) dengan editor sederhana, status publikasi, dan SEO dasar.
 - Modul **Manage Settings** dengan dukungan penyimpanan database menggunakan Spatie Laravel Settings.
 - Seeder awal untuk pengguna Super Admin dan Content Editor, lengkap dengan peran.
 - Seeder `SettingSeeder` yang mengisi nilai default dan metadata untuk pengaturan umum, email, dan sosial.

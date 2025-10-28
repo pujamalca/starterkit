@@ -7,9 +7,9 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Actions;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -74,10 +74,9 @@ class CommentsRelationManager extends RelationManager
                     ->visible(fn ($record) => $record->is_approved)
                     ->action(fn ($record) => $record->reject())
                     ->requiresConfirmation(),
-                EditAction::make()->label('Edit'),
+                Actions\EditAction::make()->label('Edit'),
                 DeleteAction::make()->label('Hapus'),
             ])
             ->emptyStateHeading('Belum ada komentar');
     }
 }
-

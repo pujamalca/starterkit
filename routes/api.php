@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CommentController;
+use App\Http\Controllers\Api\V1\PageController;
 use App\Http\Controllers\Api\V1\PostController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,9 @@ Route::prefix('v1')
 
         Route::get('posts', [PostController::class, 'index'])->name('posts.index');
         Route::get('posts/{post:slug}', [PostController::class, 'show'])->name('posts.show');
+
+        Route::get('pages', [PageController::class, 'index'])->name('pages.index');
+        Route::get('pages/{slug}', [PageController::class, 'show'])->name('pages.show');
 
         Route::middleware(['auth:sanctum', 'active'])->group(function (): void {
             Route::post('posts', [PostController::class, 'store'])->name('posts.store');

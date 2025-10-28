@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Comment;
+use App\Models\Page;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
@@ -14,12 +15,20 @@ class ContentSeeder extends Seeder
 {
     public function run(): void
     {
-        if (Post::exists()) {
-            return;
-        }
-
         if (User::count() < 10) {
             User::factory()->count(3)->create();
+        }
+
+        $authors = User::inRandomOrder()->take(8)->get();
+
+        $this->seedPosts($authors);
+        $this->seedPages($authors);
+    }
+
+    protected function seedPosts(Collection $authors): void
+    {
+        if (Post::exists()) {
+            return;
         }
 
         $categories = Category::factory()->count(4)->create();
@@ -35,8 +44,6 @@ class ContentSeeder extends Seeder
 
         $tags = Tag::factory()->count(8)->create();
 
-        $authors = User::inRandomOrder()->take(8)->get();
-
         foreach (range(1, 12) as $index) {
             $post = Post::factory()->create([
                 'category_id' => $categories->random()->id,
@@ -46,6 +53,27 @@ class ContentSeeder extends Seeder
             $post->tags()->sync($tags->random(rand(2, 4))->pluck('id'));
 
             $this->seedCommentsForPost($post, $authors);
+        }
+    }
+
+    protected function seedPages(Collection $authors): void
+    {
+        if (Page::exists()) {
+            return;
+        }
+
+        foreach ([
+            ['title' => 'Tentang Kami', 'slug' => 'tentang-kami'],
+            ['title' => 'Kontak', 'slug' => 'kontak'],
+            ['title' => 'Kebijakan Privasi', 'slug' => 'kebijakan-privasi'],
+        ] as $pageData) {
+            Page::factory()->create([
+                'author_id' => $authors->random()->id,
+                'title' => $pageData['title'],
+                'slug' => $pageData['slug'],
+                'status' => 'published',
+                'published_at' => now()->subDays(rand(1, 10)),
+            ]);
         }
     }
 
