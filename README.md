@@ -50,6 +50,33 @@ Untuk memaksa update password atau assign role lain, jalankan `php artisan tinke
 - Jalankan test suite: `composer test`.
 - Setelah menambahkan halaman atau widget baru di Filament, jalankan `php artisan filament:cache-components` bila diperlukan.
 
+## Backup Database & Scheduler
+- Halaman **Backup Basis Data** (navigasi Pengaturan) menyediakan backup manual dan penjadwalan otomatis (harian/mingguan/bulanan) dengan pilihan format JSON, CSV (ZIP), atau SQL. Jangan lupa klik **Simpan Pengaturan** setelah mengubah format atau jam.
+- Berkas backup disimpan di `storage/app/backups` dan seluruh timestamp menggunakan zona waktu Asia/Jakarta (WIB).
+- Di server Ubuntu jalankan worker queue sebagai service agar job antrean (misalnya backup terjadwal) diproses otomatis. Contoh unit `systemd`:
+  ```ini
+  # /etc/systemd/system/laravel-queue.service
+  [Unit]
+  Description=Laravel Queue Worker
+  After=network.target
+
+  [Service]
+  User=www-data
+  Group=www-data
+  Restart=always
+  ExecStart=/usr/bin/php /var/www/starterkit/artisan queue:work --queue=default --tries=1 --sleep=1
+  WorkingDirectory=/var/www/starterkit
+
+  [Install]
+  WantedBy=multi-user.target
+  ```
+  Aktifkan dengan `sudo systemctl daemon-reload && sudo systemctl enable --now laravel-queue`.
+- Tambahkan cron agar scheduler Laravel berjalan setiap menit:
+  ```bash
+  * * * * * cd /var/www/starterkit && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
+  ```
+- Pantau keberhasilan backup melalui log worker (`storage/logs/laravel.log`), tabel `jobs`/`failed_jobs`, atau langsung dari log terakhir yang tampil di halaman Backup.
+
 ## Catatan Lanjutan
 - Gunakan permission `access-admin-panel` untuk membatasi akses panel secara global.
 - Pengaturan bersifat otentikasi tunggal: perubahan akan dimuat ulang saat aplikasi bootstrap, sehingga pertimbangkan cache konfigurasi saat deploy (`php artisan config:cache`).

@@ -140,19 +140,28 @@ class BackupDatabase extends Page implements HasForms
             'format' => $format,
         ];
 
-        if (! empty($state['queue'])) {
+        $queued = ! empty($state['queue']);
+
+        if ($queued) {
             $parameters['--queue'] = true;
         }
 
         try {
             $status = Artisan::call('system:backup', $parameters);
             $output = trim((string) Artisan::output());
+
+            if ($output === '') {
+                $output = $queued
+                    ? sprintf('Backup %s dijadwalkan. File akan tersimpan di storage/app/backups.', strtoupper($format))
+                    : sprintf('Backup %s selesai. File tersimpan di storage/app/backups.', strtoupper($format));
+            }
+
             $this->lastOutput = $output !== '' ? $output : null;
 
             if ($status === 0) {
                 Notification::make()
-                    ->title($state['queue'] ? 'Backup dijadwalkan.' : 'Backup selesai.')
-                    ->body($output ?: 'Perintah backup berhasil dieksekusi.')
+                    ->title($queued ? 'Backup dijadwalkan.' : 'Backup selesai.')
+                    ->body($output)
                     ->success()
                     ->send();
             } else {

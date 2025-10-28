@@ -15,7 +15,18 @@ class BackupDatabaseCommand extends Command
 
     public function handle(DatabaseBackupService $service): int
     {
-        $format = strtolower((string) $this->argument('format'));
+        $formatArgument = (string) $this->argument('format');
+
+        if (str_contains($formatArgument, '=')) {
+            [$maybeKey, $maybeValue] = array_pad(explode('=', $formatArgument, 2), 2, '');
+            if ($maybeKey === 'format' && $maybeValue !== '') {
+                $formatArgument = $maybeValue;
+            } elseif (in_array($maybeKey, DatabaseBackupService::FORMATS, true) && $maybeValue === '') {
+                $formatArgument = $maybeKey;
+            }
+        }
+
+        $format = strtolower($formatArgument);
 
         if (! in_array($format, DatabaseBackupService::FORMATS, true)) {
             $this->error('Format tidak valid. Gunakan: '.implode(', ', DatabaseBackupService::FORMATS).'.');

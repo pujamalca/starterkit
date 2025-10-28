@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -32,15 +33,16 @@ class DatabaseBackupService
             $driver = 'mysql';
         }
 
-        $baseName = sprintf('%s_%s', Str::slug((string) $database), now()->format('Ymd_His'));
+        $timestamp = $this->now();
+        $baseName = sprintf('%s_%s', Str::slug((string) $database), $timestamp->format('Ymd_His'));
         $this->ensureBackupDirectory();
 
         $tableData = $this->collectTableData($connection, $driver);
 
         return match ($format) {
-            'json' => $this->writeJsonBackup($baseName, $connection, $database, $driver, $tableData),
+            'json' => $this->writeJsonBackup($baseName, $connection, $database, $driver, $tableData, $timestamp),
             'csv' => $this->writeCsvBackup($baseName, $tableData),
-            'sql' => $this->writeSqlBackup($baseName, $database, $tableData),
+            'sql' => $this->writeSqlBackup($baseName, $database, $tableData, $timestamp),
         };
     }
 
@@ -64,12 +66,12 @@ class DatabaseBackupService
             ->all();
     }
 
-    protected function writeJsonBackup(string $baseName, string $connection, string $database, string $driver, array $tableData): string
+    protected function writeJsonBackup(string $baseName, string $connection, string $database, string $driver, array $tableData, Carbon $timestamp): string
     {
         $relativePath = "backups/{$baseName}.json";
 
         $payload = [
-            'generated_at' => now()->toIso8601String(),
+            'generated_at' => $timestamp->toIso8601String(),
             'connection' => $connection,
             'database' => $database,
             'driver' => $driver,
@@ -117,12 +119,12 @@ class DatabaseBackupService
         return $relativePath;
     }
 
-    protected function writeSqlBackup(string $baseName, string $database, array $tableData): string
+    protected function writeSqlBackup(string $baseName, string $database, array $tableData, Carbon $timestamp): string
     {
         $relativePath = "backups/{$baseName}.sql";
 
         $lines = [
-            sprintf('-- Backup basis data untuk %s dibuat pada %s', $database, now()->toIso8601String()),
+            sprintf('-- Backup basis data untuk %s dibuat pada %s (Asia/Jakarta)', $database, $timestamp->toIso8601String()),
             '',
         ];
 
@@ -230,6 +232,11 @@ class DatabaseBackupService
         }
 
         return $ordered;
+    }
+
+    protected function now(): Carbon
+    {
+        return now('Asia/Jakarta');
     }
 
     protected function quoteValue(mixed $value): string

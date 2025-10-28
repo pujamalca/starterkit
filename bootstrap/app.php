@@ -63,7 +63,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $event = $schedule->command('system:backup', [
             'format' => $format,
             '--queue' => true,
-        ])->withoutOverlapping()->onOneServer()->description('Scheduled database backup');
+        ])->withoutOverlapping()
+            ->onOneServer()
+            ->description('Scheduled database backup')
+            ->timezone('Asia/Jakarta');
 
         $time = $settings->schedule_time ?: '02:00';
 
