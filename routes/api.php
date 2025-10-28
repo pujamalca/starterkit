@@ -21,13 +21,21 @@ Route::prefix('v1')
             });
         });
 
-        Route::get('posts', [PostController::class, 'index'])->name('posts.index');
-        Route::get('posts/{post:slug}', [PostController::class, 'show'])->name('posts.show');
+        Route::get('posts', [PostController::class, 'index'])
+            ->middleware('throttle:public-content')
+            ->name('posts.index');
+        Route::get('posts/{post:slug}', [PostController::class, 'show'])
+            ->middleware('throttle:public-content')
+            ->name('posts.show');
 
-        Route::get('pages', [PageController::class, 'index'])->name('pages.index');
-        Route::get('pages/{slug}', [PageController::class, 'show'])->name('pages.show');
+        Route::get('pages', [PageController::class, 'index'])
+            ->middleware('throttle:public-content')
+            ->name('pages.index');
+        Route::get('pages/{slug}', [PageController::class, 'show'])
+            ->middleware('throttle:public-content')
+            ->name('pages.show');
 
-        Route::middleware(['auth:sanctum', 'active'])->group(function (): void {
+        Route::middleware(['auth:sanctum', 'active', 'abilities:posts:write', 'throttle:content-write'])->group(function (): void {
             Route::post('posts', [PostController::class, 'store'])->name('posts.store');
             Route::match(['put', 'patch'], 'posts/{post}', [PostController::class, 'update'])->name('posts.update');
             Route::delete('posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
@@ -39,7 +47,9 @@ Route::prefix('v1')
 
         Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
         Route::get('posts/{post:slug}/comments', [CommentController::class, 'forPost'])->name('posts.comments.index');
-        Route::post('posts/{post:slug}/comments', [CommentController::class, 'store'])->name('posts.comments.store');
+        Route::post('posts/{post:slug}/comments', [CommentController::class, 'store'])
+            ->middleware('throttle:comments')
+            ->name('posts.comments.store');
 
         Route::middleware(['auth:sanctum', 'active'])->group(function (): void {
             Route::post('comments/{comment}/approve', [CommentController::class, 'approve'])->name('comments.approve');

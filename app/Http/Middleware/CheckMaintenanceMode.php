@@ -2,17 +2,21 @@
 
 namespace App\Http\Middleware;
 
-use App\Settings\GeneralSettings;
+use App\Services\Settings\SettingsCache;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckMaintenanceMode
 {
+    public function __construct(
+        protected SettingsCache $settingsCache,
+    ) {
+    }
+
     public function handle(Request $request, Closure $next): Response
     {
-        /** @var GeneralSettings $settings */
-        $settings = app(GeneralSettings::class);
+        $settings = $this->settingsCache->general();
 
         if (! $settings->maintenance_mode) {
             return $next($request);

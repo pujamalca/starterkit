@@ -3,7 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Admin\Pages\ManageSettings;
-use App\Settings\GeneralSettings;
+use App\Services\Settings\SettingsCache;
 use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -80,14 +80,14 @@ class AdminPanelProvider extends PanelProvider
 
     protected function resolveBrandName(): string
     {
-        $settings = app(GeneralSettings::class);
+        $settings = $this->generalSettings();
 
         return $settings->site_name ?? config('app.name', 'Starter Kit');
     }
 
     protected function resolveBrandLogo(): ?string
     {
-        $settings = app(GeneralSettings::class);
+        $settings = $this->generalSettings();
 
         $logoUrl = $this->toPublicUrl($settings->site_logo);
 
@@ -100,7 +100,7 @@ class AdminPanelProvider extends PanelProvider
 
     protected function resolveFaviconUrl(): ?string
     {
-        $settings = app(GeneralSettings::class);
+        $settings = $this->generalSettings();
 
         return $this->toPublicUrl($settings->site_favicon);
     }
@@ -122,6 +122,14 @@ class AdminPanelProvider extends PanelProvider
         }
 
         return '/storage/' . $normalizedPath;
+    }
+
+    protected function generalSettings(): \App\Settings\GeneralSettings
+    {
+        /** @var SettingsCache $cache */
+        $cache = app(SettingsCache::class);
+
+        return $cache->general();
     }
 
     protected function renderBrandText(): string

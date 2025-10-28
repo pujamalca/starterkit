@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Pages;
 use App\Settings\GeneralSettings;
 use App\Settings\MailSettings;
 use App\Settings\SocialSettings;
+use App\Services\Settings\SettingsCache;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
@@ -215,8 +216,9 @@ class ManageSettings extends Page implements HasForms
 
     protected function getFormDefaults(): array
     {
-        /** @var GeneralSettings $general */
-        $general = app(GeneralSettings::class);
+        /** @var SettingsCache $settingsCache */
+        $settingsCache = app(SettingsCache::class);
+        $general = $settingsCache->general();
         /** @var MailSettings $mail */
         $mail = app(MailSettings::class);
         /** @var SocialSettings $social */
@@ -277,6 +279,7 @@ class ManageSettings extends Page implements HasForms
         $general = app(GeneralSettings::class);
         $general->fill($data['general']);
         $general->save();
+        app(SettingsCache::class)->flushGeneral();
 
         /** @var MailSettings $mail */
         $mail = app(MailSettings::class);

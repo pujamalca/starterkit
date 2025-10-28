@@ -3,6 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Activity;
+use App\Models\Page;
+use App\Repositories\PageRepository;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +26,31 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        RateLimiter::for('public-content', function (Request $request) {
+            return [
+                Limit::perMinute((int) config('starterkit.rate_limit.public', 120))
+                    ->by($request->ip()),
+            ];
+        });
+
+        RateLimiter::for('content-write', function (Request $request) {
+            $identifier = $request->user()?->getAuthIdentifier()
+                ? sprintf('user:%s', $request->user()->getAuthIdentifier())
+                : sprintf('ip:%s', $request->ip());
+
+            return [
+                Limit::perMinute((int) config('starterkit.rate_limit.content_write', 30))
+                    ->by($identifier),
+            ];
+        });
+
+        RateLimiter::for('comments', function (Request $request) {
+            return [
+                Limit::perMinute((int) config('starterkit.rate_limit.comments', 20))
+                    ->by($request->ip()),
+            ];
+        });
+
         if (! app()->runningInConsole()) {
             $request = request();
 
@@ -45,6 +75,26 @@ class AppServiceProvider extends ServiceProvider
             $activity->user_agent ??= $request->userAgent();
             $activity->url ??= URL::full();
             $activity->method ??= $request->method();
+        });
+
+        Page::saved(function (Page $page): void {
+            /** @var PageRepository $repository */
+            $repository = app(PageRepository::class);
+            $originalSlug = $page->getOriginal('slug');
+
+            $repository->forget($page, $originalSlug);
+        });
+
+        Page::deleted(function (Page $page): void {
+            /** @var PageRepository $repository */
+            $repository = app(PageRepository::class);
+            $repository->forget($page, $page->getOriginal('slug'));
+        });
+
+        Page::restored(function (Page $page): void {
+            /** @var PageRepository $repository */
+            $repository = app(PageRepository::class);
+            $repository->forget($page, $page->getOriginal('slug'));
         });
     }
 }
