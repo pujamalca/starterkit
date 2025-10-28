@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Middleware\CheckMaintenanceMode;
+use App\Http\Middleware\CheckUserActive;
+use App\Http\Middleware\ForceJsonResponse;
+use App\Http\Middleware\LogUserActivity;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\CheckMaintenanceMode;
-use App\Http\Middleware\ForceJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -22,14 +25,23 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'active' => CheckUserActive::class,
+            'log.user.activity' => LogUserActivity::class,
+            'set.locale' => SetLocale::class,
         ]);
 
         $middleware->prepend(CheckMaintenanceMode::class);
 
-        // Force JSON response untuk semua API routes
-        $middleware->api(prepend: [
-            ForceJsonResponse::class,
-        ]);
+        // API middleware stack adjustments
+        $middleware->api(
+            append: [
+                LogUserActivity::class,
+            ],
+            prepend: [
+                SetLocale::class,
+                ForceJsonResponse::class,
+            ],
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Handle exception untuk API routes dengan JSON response
