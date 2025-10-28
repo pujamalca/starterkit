@@ -66,7 +66,21 @@ class UserService
     {
         $name = $tokenName ?: sprintf('api-token-%s', now()->timestamp);
 
-        return $user->createToken($name)->plainTextToken;
+        $abilities = [
+            'posts:read',
+            'pages:read',
+            'comments:create',
+        ];
+
+        if ($user->can('manage-posts')) {
+            $abilities[] = 'posts:write';
+        }
+
+        if ($user->can('manage-comments')) {
+            $abilities[] = 'comments:moderate';
+        }
+
+        return $user->createToken($name, array_values(array_unique($abilities)))->plainTextToken;
     }
 
     public function revokeTokens(User $user): void

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\IncrementPostViewCount;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -117,7 +118,13 @@ class Post extends Model implements HasMedia
 
     public function incrementViews(): void
     {
-        $this->increment('view_count');
+        $key = $this->getKey();
+
+        if ($key === null) {
+            return;
+        }
+
+        IncrementPostViewCount::dispatch($key);
     }
 
     public function getExcerptAttribute(?string $value): ?string

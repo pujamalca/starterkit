@@ -131,6 +131,10 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request): JsonResponse
     {
+        if (! $request->user()?->tokenCan('posts:write')) {
+            abort(Response::HTTP_FORBIDDEN);
+        }
+
         $post = $this->postService->create($request->user(), $request->validated());
 
         return PostResource::make($post)
@@ -167,6 +171,10 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post): JsonResponse
     {
+        if (! $request->user()?->tokenCan('posts:write')) {
+            abort(Response::HTTP_FORBIDDEN);
+        }
+
         $post = $this->postService->update($post, $request->validated());
 
         return PostResource::make($post)
@@ -196,6 +204,10 @@ class PostController extends Controller
     public function destroy(Request $request, Post $post): JsonResponse
     {
         $user = $request->user();
+
+        if (! $user?->tokenCan('posts:write')) {
+            abort(Response::HTTP_FORBIDDEN);
+        }
 
         if (! $user || (! $user->can('manage-posts') && $user->id !== $post->author_id)) {
             abort(Response::HTTP_FORBIDDEN);

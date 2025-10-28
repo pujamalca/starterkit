@@ -51,7 +51,7 @@ Route::prefix('v1')
             ->middleware('throttle:comments')
             ->name('posts.comments.store');
 
-        Route::middleware(['auth:sanctum', 'active'])->group(function (): void {
+        Route::middleware(['auth:sanctum', 'active', 'abilities:comments:moderate'])->group(function (): void {
             Route::post('comments/{comment}/approve', [CommentController::class, 'approve'])->name('comments.approve');
             Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
         });
