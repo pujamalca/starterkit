@@ -32,6 +32,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'active' => CheckUserActive::class,
             'log.user.activity' => LogUserActivity::class,
             'set.locale' => SetLocale::class,
+            'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
+            'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
         ]);
 
         $middleware->prepend(CheckMaintenanceMode::class);

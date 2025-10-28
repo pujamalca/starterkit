@@ -55,6 +55,8 @@ class PostService
     {
         $payload = $this->preparePayload($data, $post);
 
+        $previousStatus = $post->status;
+
         $post->fill($payload);
         $post->save();
 
