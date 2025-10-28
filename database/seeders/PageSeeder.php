@@ -105,62 +105,151 @@ support@perusahaan.com</p>
             [
                 'title' => 'Kebijakan Privasi',
                 'slug' => 'kebijakan-privasi',
-                'content' => '<h2>Kebijakan Privasi</h2>
-<p>Terakhir diperbarui: ' . now()->format('d F Y') . '</p>
+                'content' => '<div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg mb-8">
+    <p class="text-sm text-blue-800"><strong>Terakhir diperbarui:</strong> ' . now()->format('d F Y') . '</p>
+</div>
 
-<p>Kami di PT Perusahaan Indonesia menghargai privasi Anda dan berkomitmen untuk melindungi informasi pribadi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi Anda.</p>
+<p class="text-lg text-gray-800 leading-relaxed mb-6">PT Perusahaan Indonesia menghargai privasi Anda dan berkomitmen untuk melindungi informasi pribadi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi Anda.</p>
 
-<h3>1. Informasi yang Kami Kumpulkan</h3>
-<p>Kami dapat mengumpulkan berbagai jenis informasi, termasuk:</p>
-<ul>
-<li><strong>Informasi Identitas:</strong> nama, alamat email, nomor telepon</li>
-<li><strong>Informasi Akun:</strong> username, password, preferensi</li>
-<li><strong>Informasi Transaksi:</strong> riwayat pembelian, metode pembayaran</li>
-<li><strong>Informasi Teknis:</strong> alamat IP, jenis browser, sistem operasi</li>
-<li><strong>Informasi Penggunaan:</strong> halaman yang dikunjungi, durasi kunjungan</li>
+<div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-lg shadow-md mb-8">
+    <h3 class="text-2xl font-bold mb-3">1. Informasi yang Kami Kumpulkan</h3>
+    <p class="text-blue-50 mb-4">Kami dapat mengumpulkan berbagai jenis informasi, termasuk:</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            </div>
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-1">Informasi Identitas</h4>
+                <p class="text-sm text-gray-600">Nama, alamat email, nomor telepon</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+            </div>
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-1">Informasi Akun</h4>
+                <p class="text-sm text-gray-600">Username, password, preferensi</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+            </div>
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-1">Informasi Transaksi</h4>
+                <p class="text-sm text-gray-600">Riwayat pembelian, metode pembayaran</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            </div>
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-1">Informasi Teknis</h4>
+                <p class="text-sm text-gray-600">Alamat IP, jenis browser, sistem operasi</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3 class="text-2xl font-bold text-gray-900 mb-4 mt-8">2. Penggunaan Informasi</h3>
+<p class="text-gray-700 mb-4">Kami menggunakan informasi yang dikumpulkan untuk:</p>
+<ul class="space-y-3 mb-8">
+    <li class="flex items-start gap-3">
+        <span class="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">✓</span>
+        <span class="text-gray-700">Menyediakan dan meningkatkan layanan kami</span>
+    </li>
+    <li class="flex items-start gap-3">
+        <span class="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">✓</span>
+        <span class="text-gray-700">Memproses transaksi dan mengirimkan konfirmasi</span>
+    </li>
+    <li class="flex items-start gap-3">
+        <span class="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">✓</span>
+        <span class="text-gray-700">Berkomunikasi dengan Anda tentang layanan kami</span>
+    </li>
+    <li class="flex items-start gap-3">
+        <span class="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">✓</span>
+        <span class="text-gray-700">Mengirimkan newsletter dan informasi promosi (jika Anda berlangganan)</span>
+    </li>
+    <li class="flex items-start gap-3">
+        <span class="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">✓</span>
+        <span class="text-gray-700">Menganalisis penggunaan layanan untuk peningkatan</span>
+    </li>
+    <li class="flex items-start gap-3">
+        <span class="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">✓</span>
+        <span class="text-gray-700">Mencegah penipuan dan aktivitas ilegal</span>
+    </li>
 </ul>
 
-<h3>2. Penggunaan Informasi</h3>
-<p>Kami menggunakan informasi yang dikumpulkan untuk:</p>
-<ul>
-<li>Menyediakan dan meningkatkan layanan kami</li>
-<li>Memproses transaksi dan mengirimkan konfirmasi</li>
-<li>Berkomunikasi dengan Anda tentang layanan kami</li>
-<li>Mengirimkan newsletter dan informasi promosi (jika Anda berlangganan)</li>
-<li>Menganalisis penggunaan layanan untuk peningkatan</li>
-<li>Mencegah penipuan dan aktivitas ilegal</li>
-</ul>
+<div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
+    <h3 class="text-2xl font-bold text-green-900 mb-3">3. Keamanan Data</h3>
+    <p class="text-green-800">Kami menerapkan langkah-langkah keamanan teknis dan organisasi yang sesuai untuk melindungi informasi pribadi Anda dari akses, penggunaan, atau pengungkapan yang tidak sah.</p>
+</div>
 
-<h3>3. Keamanan Data</h3>
-<p>Kami menerapkan langkah-langkah keamanan teknis dan organisasi yang sesuai untuk melindungi informasi pribadi Anda dari akses, penggunaan, atau pengungkapan yang tidak sah.</p>
+<h3 class="text-2xl font-bold text-gray-900 mb-4">4. Berbagi Informasi</h3>
+<p class="text-gray-700 mb-4">Kami tidak akan menjual atau menyewakan informasi pribadi Anda kepada pihak ketiga. Kami hanya membagikan informasi Anda dalam situasi berikut:</p>
+<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8">
+    <ul class="space-y-2">
+        <li class="text-gray-800">• Dengan persetujuan eksplisit Anda</li>
+        <li class="text-gray-800">• Untuk mematuhi kewajiban hukum</li>
+        <li class="text-gray-800">• Dengan penyedia layanan yang membantu operasi bisnis kami</li>
+        <li class="text-gray-800">• Dalam transaksi bisnis seperti merger atau akuisisi</li>
+    </ul>
+</div>
 
-<h3>4. Berbagi Informasi</h3>
-<p>Kami tidak akan menjual atau menyewakan informasi pribadi Anda kepada pihak ketiga. Kami hanya membagikan informasi Anda dalam situasi berikut:</p>
-<ul>
-<li>Dengan persetujuan eksplisit Anda</li>
-<li>Untuk mematuhi kewajiban hukum</li>
-<li>Dengan penyedia layanan yang membantu operasi bisnis kami</li>
-<li>Dalam transaksi bisnis seperti merger atau akuisisi</li>
-</ul>
+<h3 class="text-2xl font-bold text-gray-900 mb-4">5. Cookie</h3>
+<p class="text-gray-700 mb-8">Kami menggunakan cookie dan teknologi pelacakan serupa untuk meningkatkan pengalaman pengguna. Anda dapat mengatur browser Anda untuk menolak cookie, namun ini dapat mempengaruhi fungsi situs web.</p>
 
-<h3>5. Cookie</h3>
-<p>Kami menggunakan cookie dan teknologi pelacakan serupa untuk meningkatkan pengalaman pengguna. Anda dapat mengatur browser Anda untuk menolak cookie, namun ini dapat mempengaruhi fungsi situs web.</p>
+<h3 class="text-2xl font-bold text-gray-900 mb-4">6. Hak Anda</h3>
+<p class="text-gray-700 mb-4">Anda memiliki hak untuk:</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
+    <div class="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+        <span class="text-blue-600">→</span>
+        <span class="text-gray-800">Mengakses informasi pribadi yang kami simpan</span>
+    </div>
+    <div class="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+        <span class="text-blue-600">→</span>
+        <span class="text-gray-800">Meminta koreksi informasi yang tidak akurat</span>
+    </div>
+    <div class="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+        <span class="text-blue-600">→</span>
+        <span class="text-gray-800">Meminta penghapusan informasi pribadi Anda</span>
+    </div>
+    <div class="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+        <span class="text-blue-600">→</span>
+        <span class="text-gray-800">Menolak pengolahan informasi pribadi Anda</span>
+    </div>
+    <div class="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+        <span class="text-blue-600">→</span>
+        <span class="text-gray-800">Meminta portabilitas data</span>
+    </div>
+</div>
 
-<h3>6. Hak Anda</h3>
-<p>Anda memiliki hak untuk:</p>
-<ul>
-<li>Mengakses informasi pribadi yang kami simpan</li>
-<li>Meminta koreksi informasi yang tidak akurat</li>
-<li>Meminta penghapusan informasi pribadi Anda</li>
-<li>Menolak pengolahan informasi pribadi Anda</li>
-<li>Meminta portabilitas data</li>
-</ul>
+<h3 class="text-2xl font-bold text-gray-900 mb-4">7. Perubahan Kebijakan</h3>
+<p class="text-gray-700 mb-8">Kami dapat memperbarui Kebijakan Privasi ini dari waktu ke waktu. Kami akan memberi tahu Anda tentang perubahan signifikan melalui email atau pemberitahuan di situs web kami.</p>
 
-<h3>7. Perubahan Kebijakan</h3>
-<p>Kami dapat memperbarui Kebijakan Privasi ini dari waktu ke waktu. Kami akan memberi tahu Anda tentang perubahan signifikan melalui email atau pemberitahuan di situs web kami.</p>
-
-<h3>8. Hubungi Kami</h3>
-<p>Jika Anda memiliki pertanyaan tentang Kebijakan Privasi ini, silakan hubungi kami di privacy@perusahaan.com</p>',
+<div class="bg-gradient-to-r from-gray-700 to-gray-900 text-white rounded-lg p-6">
+    <h3 class="text-2xl font-bold mb-3">8. Hubungi Kami</h3>
+    <p class="text-gray-200 mb-4">Jika Anda memiliki pertanyaan tentang Kebijakan Privasi ini, silakan hubungi kami:</p>
+    <a href="mailto:privacy@perusahaan.com" class="inline-flex items-center gap-2 bg-white text-gray-900 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+        privacy@perusahaan.com
+    </a>
+</div>',
                 'status' => 'published',
                 'published_at' => now(),
                 'seo_title' => 'Kebijakan Privasi - Perlindungan Data Pengguna',

@@ -101,17 +101,25 @@ class PageResource extends Resource
                                     Tab::make('HTML Source')
                                         ->icon('heroicon-o-code-bracket')
                                         ->schema([
-                                            \Filament\Forms\Components\Textarea::make('content_html')
+                                            \Filament\Forms\Components\CodeEditor::make('content_html')
                                                 ->label('HTML Code')
-                                                ->rows(25)
+                                                ->language(\Filament\Forms\Components\CodeEditor\Enums\Language::Html)
                                                 ->columnSpanFull()
                                                 ->live(onBlur: true)
                                                 ->afterStateUpdated(fn (?string $state, callable $set) => $set('content', $state))
+                                                ->afterStateHydrated(function ($state, callable $set) {
+                                                    // Format HTML agar rapi dengan line breaks dan indentasi
+                                                    if ($state) {
+                                                        $formatted = self::formatHtml($state);
+                                                        $set('content_html', $formatted);
+                                                    }
+                                                })
                                                 ->dehydrated(false)
-                                                ->helperText('Edit HTML secara langsung. Perubahan akan tersinkronisasi dengan Editor Visual.')
                                                 ->extraAttributes([
-                                                    'style' => 'font-family: monospace; font-size: 0.9rem;'
-                                                ]),
+                                                    'style' => 'white-space: pre-wrap !important; word-break: break-word !important; overflow-x: hidden !important;',
+                                                    'class' => 'code-editor-wrapped',
+                                                ])
+                                                ->helperText('Edit HTML secara langsung dengan syntax highlighting. Code akan wrap otomatis tanpa scroll horizontal.'),
                                         ]),
                                 ]),
                         ]),
@@ -267,5 +275,112 @@ class PageResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with('author');
+    }
+
+    /**
+     * Format HTML untuk ditampilkan rapi di CodeEditor
+     */
+    protected static function formatHtml(string $html): string
+    {
+        if (empty($html)) {
+            return $html;
+        }
+
+        // Step 1: Add line breaks between tags
+        $html = preg_replace('/>\s*</', ">\n<", $html);
+
+        // Step 2: Break long lines with many attributes
+        $html = preg_replace_callback('/<([a-z][a-z0-9]*)\s+([^>]+)>/i', function ($matches) {
+            $tag = $matches[1];
+            $attrs = $matches[2];
+
+            // Jika attributes terlalu panjang (lebih dari 80 karakter), pecah per attribute
+            if (strlen($attrs) > 80) {
+                // Split attributes
+                preg_match_all('/(\w+(?:-\w+)*)\s*=\s*["\']([^"\']*)["\']/', $attrs, $attrMatches, PREG_SET_ORDER);
+
+                if (count($attrMatches) > 1) {
+                    $formattedAttrs = "\n";
+                    foreach ($attrMatches as $attr) {
+                        $formattedAttrs .= "    {$attr[1]}=\"{$attr[2]}\"\n";
+                    }
+                    return "<{$tag}{$formattedAttrs}>";
+                }
+            }
+
+            return $matches[0];
+        }, $html);
+
+        // Step 3: Split by lines and indent
+        $lines = explode("\n", $html);
+        $formatted = [];
+        $indent = 0;
+        $maxLineLength = 100; // Maximum character per line
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line)) {
+                continue;
+            }
+
+            // Decrease indent for closing tags
+            if (preg_match('/^<\/[^>]+>/', $line)) {
+                $indent = max(0, $indent - 1);
+            }
+
+            // Check if line is an attribute line
+            $isAttribute = preg_match('/^\w+(-\w+)*\s*=/', $line);
+
+            if ($isAttribute) {
+                // Attribute lines get extra indent
+                $formatted[] = str_repeat('    ', $indent + 1) . $line;
+            } else {
+                // Regular lines
+                $indentedLine = str_repeat('    ', $indent) . $line;
+
+                // If line is too long and has text content, try to break it
+                if (strlen($indentedLine) > $maxLineLength && preg_match('/>([^<]+)</', $line, $textMatch)) {
+                    $text = $textMatch[1];
+                    if (strlen($text) > 60) {
+                        // Break long text content
+                        $parts = explode(' ', $text);
+                        $currentLine = '';
+                        $textLines = [];
+
+                        foreach ($parts as $word) {
+                            if (strlen($currentLine . ' ' . $word) > 60) {
+                                if ($currentLine) {
+                                    $textLines[] = $currentLine;
+                                }
+                                $currentLine = $word;
+                            } else {
+                                $currentLine .= ($currentLine ? ' ' : '') . $word;
+                            }
+                        }
+                        if ($currentLine) {
+                            $textLines[] = $currentLine;
+                        }
+
+                        // Reconstruct the line with broken text
+                        $line = preg_replace('/>([^<]+)</', '>' . implode("\n" . str_repeat('    ', $indent + 1), $textLines) . '<', $line);
+                        $formatted[] = str_repeat('    ', $indent) . $line;
+                    } else {
+                        $formatted[] = $indentedLine;
+                    }
+                } else {
+                    $formatted[] = $indentedLine;
+                }
+            }
+
+            // Increase indent for opening tags (but not self-closing)
+            if (!$isAttribute && preg_match('/<[^\/!][^>]*[^\/]>$/', $line) && !preg_match('/<[^>]+\/>$/', $line)) {
+                // Check if tag closes on same line
+                if (!preg_match('/<([a-z][a-z0-9]*)[^>]*>.*<\/\1>/i', $line)) {
+                    $indent++;
+                }
+            }
+        }
+
+        return implode("\n", $formatted);
     }
 }
