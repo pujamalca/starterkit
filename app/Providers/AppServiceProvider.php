@@ -6,6 +6,8 @@ use App\Filament\Admin\Widgets\AnalyticsTrendsChart;
 use App\Filament\Admin\Widgets\DoctorLatencyChart;
 use App\Models\Activity;
 use App\Models\Page;
+use App\Models\Post;
+use App\Observers\PostObserver;
 use App\Repositories\PageRepository;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -29,6 +31,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register observers
+        Post::observe(PostObserver::class);
+
         RateLimiter::for('public-content', function (Request $request) {
             return [
                 Limit::perMinute((int) config('starterkit.rate_limit.public', 120))
