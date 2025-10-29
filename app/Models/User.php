@@ -3,11 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
@@ -16,7 +18,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements HasMedia
+class User extends Authenticatable implements HasMedia, HasAvatar
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens;
@@ -103,6 +105,26 @@ class User extends Authenticatable implements HasMedia
         }
 
         return sprintf('https://www.gravatar.com/avatar/%s?d=mp', md5(strtolower(trim((string) $this->email))));
+    }
+
+    /**
+     * Get the Filament avatar URL for the user.
+     * This method is automatically called by Filament to display user avatar.
+     */
+    public function getFilamentAvatarUrl(): ?string
+    {
+        if ($this->avatar) {
+            // If avatar is already a full URL, return it
+            if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
+                return $this->avatar;
+            }
+
+            // Otherwise, return the storage URL
+            return Storage::url($this->avatar);
+        }
+
+        // Fallback to null (will show initials)
+        return null;
     }
 
     public function isAdmin(): bool

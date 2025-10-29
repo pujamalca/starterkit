@@ -43,6 +43,10 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->userMenuItems([
+                'profile' => Action::make('profile')
+                    ->label('Edit Profile')
+                    ->url(fn (): string => route('filament.admin.pages.edit-profile'))
+                    ->icon('heroicon-o-user-circle'),
                 Action::make('settings')
                     ->visible(fn (): bool => auth()->user()?->can('access-settings') ?? false)
                     ->url(fn (): string => ManageSettings::getUrl())

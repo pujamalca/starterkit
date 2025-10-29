@@ -19,7 +19,8 @@
       "Bash(python -c \"import sys, json; print(json.load(sys.stdin)[''''meta''''][''''token''''])\")",
       "Bash(python:*)",
       "WebSearch",
-      "Bash(composer update:*)"
+      "Bash(composer update:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

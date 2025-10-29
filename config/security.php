@@ -19,6 +19,7 @@ return [
         "img-src 'self' data: https: blob:",
         "font-src 'self' data: https://fonts.gstatic.com",
         "connect-src 'self'",
+        "worker-src 'self' blob:",
         "frame-ancestors 'self'",
         "base-uri 'self'",
         "form-action 'self'",
