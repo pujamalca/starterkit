@@ -179,12 +179,24 @@ class Post extends Model implements HasMedia
             return $query;
         }
 
-        return $query->where(function (Builder $builder) use ($term) {
-            $builder
-                ->where('title', 'like', "%{$term}%")
-                ->orWhere('excerpt', 'like', "%{$term}%")
-                ->orWhere('content', 'like', "%{$term}%");
-        });
+        // Use full-text search for better performance
+        return $query->whereRaw(
+            'MATCH(title, content, excerpt) AGAINST(? IN NATURAL LANGUAGE MODE)',
+            [$term]
+        );
+    }
+
+    public function scopeSearchRelevance(Builder $query, ?string $term): Builder
+    {
+        if (blank($term)) {
+            return $query;
+        }
+
+        // Full-text search with relevance score
+        return $query
+            ->selectRaw('*, MATCH(title, content, excerpt) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance', [$term])
+            ->whereRaw('MATCH(title, content, excerpt) AGAINST(? IN NATURAL LANGUAGE MODE)', [$term])
+            ->orderByDesc('relevance');
     }
 
     public function registerMediaCollections(): void

@@ -54,5 +54,31 @@ class Page extends Model
     {
         return $query->where('status', 'published');
     }
+
+    public function scopeSearch(Builder $query, ?string $term): Builder
+    {
+        if (blank($term)) {
+            return $query;
+        }
+
+        // Use full-text search for better performance
+        return $query->whereRaw(
+            'MATCH(title, content) AGAINST(? IN NATURAL LANGUAGE MODE)',
+            [$term]
+        );
+    }
+
+    public function scopeSearchRelevance(Builder $query, ?string $term): Builder
+    {
+        if (blank($term)) {
+            return $query;
+        }
+
+        // Full-text search with relevance score
+        return $query
+            ->selectRaw('*, MATCH(title, content) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance', [$term])
+            ->whereRaw('MATCH(title, content) AGAINST(? IN NATURAL LANGUAGE MODE)', [$term])
+            ->orderByDesc('relevance');
+    }
 }
 

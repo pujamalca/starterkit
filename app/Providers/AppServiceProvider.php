@@ -5,9 +5,13 @@ namespace App\Providers;
 use App\Filament\Admin\Widgets\AnalyticsTrendsChart;
 use App\Filament\Admin\Widgets\DoctorLatencyChart;
 use App\Models\Activity;
+use App\Models\Comment;
 use App\Models\Page;
 use App\Models\Post;
+use App\Models\User;
+use App\Observers\CommentObserver;
 use App\Observers\PostObserver;
+use App\Observers\UserObserver;
 use App\Repositories\PageRepository;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -33,6 +37,8 @@ class AppServiceProvider extends ServiceProvider
     {
         // Register observers
         Post::observe(PostObserver::class);
+        User::observe(UserObserver::class);
+        Comment::observe(CommentObserver::class);
 
         RateLimiter::for('public-content', function (Request $request) {
             return [

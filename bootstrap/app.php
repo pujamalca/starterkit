@@ -4,6 +4,7 @@ use App\Http\Middleware\CheckMaintenanceMode;
 use App\Http\Middleware\CheckUserActive;
 use App\Http\Middleware\ForceJsonResponse;
 use App\Http\Middleware\LogUserActivity;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use App\Services\DatabaseBackupService;
 use App\Settings\BackupSettings;
@@ -37,6 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->prepend(CheckMaintenanceMode::class);
+        $middleware->append(SecurityHeaders::class);
 
         // API middleware stack adjustments
         $middleware->api(

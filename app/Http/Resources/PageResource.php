@@ -4,9 +4,40 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use OpenApi\Annotations as OA;
 
 /**
  * @property \App\Models\Page $resource
+ */
+/**
+ * @OA\Schema(
+ *     schema="PageResource",
+ *     title="Page",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="title", type="string", example="Tentang Kami"),
+ *     @OA\Property(property="slug", type="string", example="tentang-kami"),
+ *     @OA\Property(property="content", type="string"),
+ *     @OA\Property(property="status", type="string", example="published"),
+ *     @OA\Property(property="published_at", type="string", format="date-time", nullable=true),
+ *     @OA\Property(
+ *         property="seo",
+ *         type="object",
+ *         @OA\Property(property="title", type="string", nullable=true),
+ *         @OA\Property(property="description", type="string", nullable=true),
+ *         @OA\Property(property="keywords", type="string", nullable=true),
+ *         @OA\Property(property="canonical_url", type="string", nullable=true),
+ *         @OA\Property(property="og_image", type="string", nullable=true)
+ *     ),
+ *     @OA\Property(property="metadata", type="object", nullable=true),
+ *     @OA\Property(
+ *         property="author",
+ *         type="object",
+ *         @OA\Property(property="id", type="integer", nullable=true),
+ *         @OA\Property(property="name", type="string", nullable=true)
+ *     ),
+ *     @OA\Property(property="created_at", type="string", format="date-time"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time")
+ * )
  */
 class PageResource extends JsonResource
 {
