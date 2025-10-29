@@ -277,6 +277,31 @@ class PageResource extends Resource
         return parent::getEloquentQuery()->with('author');
     }
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('manage-pages') ?? false;
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->can('manage-pages') ?? false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()?->can('manage-pages') ?? false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()?->can('manage-pages') ?? false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()?->can('manage-pages') ?? false;
+    }
+
     /**
      * Format HTML untuk ditampilkan rapi di CodeEditor
      */

@@ -51,4 +51,29 @@ class CommentResource extends Resource
         return 'Konten';
     }
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('manage-comments') ?? false;
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->can('manage-comments') ?? false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()?->can('manage-comments') ?? false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()?->can('manage-comments') ?? false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()?->can('manage-comments') ?? false;
+    }
+
 }

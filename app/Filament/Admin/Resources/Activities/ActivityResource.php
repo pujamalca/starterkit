@@ -51,5 +51,30 @@ class ActivityResource extends Resource
     {
         return parent::getEloquentQuery()->latest('created_at');
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('view-activity-log') ?? false;
+    }
+
+    public static function canCreate(): bool
+    {
+        return false; // Activity logs should not be manually created
+    }
+
+    public static function canEdit($record): bool
+    {
+        return false; // Activity logs should not be edited
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()?->can('view-activity-log') ?? false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()?->can('view-activity-log') ?? false;
+    }
 }
 

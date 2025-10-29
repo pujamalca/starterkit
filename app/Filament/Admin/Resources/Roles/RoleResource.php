@@ -56,5 +56,30 @@ class RoleResource extends Resource
     {
         return (string) static::getModel()::count();
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('manage-roles') ?? false;
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->can('manage-roles') ?? false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()?->can('manage-roles') ?? false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()?->can('manage-roles') ?? false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()?->can('manage-roles') ?? false;
+    }
 }
 
