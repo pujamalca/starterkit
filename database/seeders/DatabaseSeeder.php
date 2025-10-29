@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         $admin = User::updateOrCreate(
             ['email' => 'admin@example.com'],
             [
-                'name' => 'Admin User',
+                'name' => 'Administrator Sistem',
                 'username' => 'admin',
                 'email_verified_at' => now(),
                 'is_active' => true,
@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
         $editor = User::firstOrCreate(
             ['email' => 'editor@example.com'],
             [
-                'name' => 'Editor User',
+                'name' => 'Editor Konten',
                 'username' => 'editor',
                 'email_verified_at' => now(),
                 'is_active' => true,
@@ -48,6 +48,9 @@ class DatabaseSeeder extends Seeder
             $editor->assignRole('Content Editor');
         }
 
-        $this->call(ContentSeeder::class);
+        // Gunakan IndonesianContentSeeder untuk konten berbahasa Indonesia
+        // Atau gunakan ContentSeeder untuk konten random (English)
+        $this->call(IndonesianContentSeeder::class);
+        // $this->call(ContentSeeder::class);
     }
 }

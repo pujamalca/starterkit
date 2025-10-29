@@ -4,15 +4,15 @@ namespace App\Filament\Admin\Resources\Posts\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Tabs\Tab;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
@@ -22,6 +22,7 @@ class PostForm
     {
         return $schema->components([
             Tabs::make('Post Tabs')
+                ->columnSpanFull()
                 ->tabs([
                     Tab::make('Konten')
                         ->icon('heroicon-o-document-text')

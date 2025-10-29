@@ -4,6 +4,9 @@ namespace App\Filament\Admin\Resources\Posts\Tables;
 
 use App\Filament\Admin\Resources\Posts\PostResource;
 use App\Models\Post;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -102,6 +105,16 @@ class PostsTable
                 TernaryFilter::make('is_featured')
                     ->label('Sorotan')
                     ->placeholder('Semua'),
+            ])
+            ->actions([
+                Action::make('preview')
+                    ->label('Preview')
+                    ->icon('heroicon-o-eye')
+                    ->color('gray')
+                    ->url(fn (Post $record) => route('posts.preview', $record))
+                    ->openUrlInNewTab(),
+                EditAction::make()->label('Edit'),
+                DeleteAction::make()->label('Hapus'),
             ]);
     }
 }

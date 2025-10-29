@@ -23,14 +23,34 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $indonesianNames = [
+            'Budi Santoso', 'Ani Wijaya', 'Dedi Pratama', 'Siti Nurhaliza',
+            'Eko Saputra', 'Rina Kusuma', 'Ahmad Fauzi', 'Dewi Lestari',
+            'Rizki Ramadhan', 'Maya Sari', 'Fajar Nugroho', 'Linda Permata',
+            'Hendra Gunawan', 'Putri Wulandari', 'Irfan Hakim', 'Ratna Dewi',
+            'Bambang Wijaya', 'Indah Safitri', 'Tono Sugiarto', 'Ayu Lestari',
+        ];
+
+        $name = $indonesianNames[array_rand($indonesianNames)];
+        $username = Str::slug(explode(' ', $name)[0]) . rand(100, 999);
+
         return [
-            'name' => fake()->name(),
-            'username' => fake()->unique()->userName(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $name,
+            'username' => $username,
+            'email' => Str::slug($name) . rand(1, 999) . '@example.com',
             'email_verified_at' => now(),
-            'phone' => fake()->optional()->phoneNumber(),
+            'phone' => fake()->optional()->numerify('08##-####-####'),
             'avatar' => fake()->optional()->imageUrl(200, 200, 'people'),
-            'bio' => fake()->optional()->sentence(),
+            'bio' => fake()->optional()->randomElement([
+                'Content Creator & Digital Marketer',
+                'Web Developer & Tech Enthusiast',
+                'Freelance Writer',
+                'UI/UX Designer',
+                'Software Engineer',
+                'Digital Marketing Specialist',
+                'Full Stack Developer',
+                'Blogger & Photographer',
+            ]),
             'is_active' => true,
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
