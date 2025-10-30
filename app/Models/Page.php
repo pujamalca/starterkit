@@ -22,6 +22,9 @@ class Page extends Model
         'slug',
         'content',
         'status',
+        'show_in_header',
+        'show_in_footer',
+        'menu_order',
         'published_at',
         'scheduled_at',
         'seo_title',
@@ -36,6 +39,8 @@ class Page extends Model
         'metadata' => 'array',
         'published_at' => 'datetime',
         'scheduled_at' => 'datetime',
+        'show_in_header' => 'boolean',
+        'show_in_footer' => 'boolean',
     ];
 
     public function getSlugOptions(): SlugOptions
@@ -53,6 +58,20 @@ class Page extends Model
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('status', 'published');
+    }
+
+    public function scopeShowInHeader(Builder $query): Builder
+    {
+        return $query->where('show_in_header', true)
+            ->published()
+            ->orderBy('menu_order');
+    }
+
+    public function scopeShowInFooter(Builder $query): Builder
+    {
+        return $query->where('show_in_footer', true)
+            ->published()
+            ->orderBy('menu_order');
     }
 
     public function scopeSearch(Builder $query, ?string $term): Builder

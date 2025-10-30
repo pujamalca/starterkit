@@ -1,3 +1,9 @@
+@php
+    $generalSettings = app(\App\Settings\GeneralSettings::class);
+    $defaultTitle = $generalSettings->site_name ?? config('app.name', 'Laravel Starter Kit');
+    $defaultDescription = $generalSettings->site_description ?? '';
+    $siteFavicon = $generalSettings->site_favicon;
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -5,10 +11,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', config('app.name', 'Laravel Starter Kit'))</title>
+    <title>@yield('title', $defaultTitle)</title>
 
     @hasSection('meta_description')
         <meta name="description" content="@yield('meta_description')">
+    @elseif($defaultDescription)
+        <meta name="description" content="{{ $defaultDescription }}">
+    @endif
+
+    @if($siteFavicon)
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $siteFavicon) }}">
     @endif
 
     @hasSection('canonical_url')
@@ -19,6 +31,9 @@
 
     <!-- Vite Assets -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     @stack('styles')
 </head>

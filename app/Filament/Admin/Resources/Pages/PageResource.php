@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\Pages\PageResource\Pages\ListPages;
 use App\Models\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
@@ -138,6 +139,24 @@ class PageResource extends Resource
                                     ->native(false)
                                     ->helperText('Isi jika status diset menjadi Terjadwal.'),
                             ]),
+                            Section::make('Tampilan Menu')
+                                ->schema([
+                                    Grid::make(3)->schema([
+                                        \Filament\Forms\Components\Toggle::make('show_in_header')
+                                            ->label('Tampilkan di Header')
+                                            ->helperText('Halaman akan muncul di menu navigasi header.'),
+                                        \Filament\Forms\Components\Toggle::make('show_in_footer')
+                                            ->label('Tampilkan di Footer')
+                                            ->helperText('Halaman akan muncul di menu footer.'),
+                                        \Filament\Forms\Components\TextInput::make('menu_order')
+                                            ->label('Urutan Menu')
+                                            ->numeric()
+                                            ->default(0)
+                                            ->minValue(0)
+                                            ->helperText('Urutan tampilan menu (semakin kecil, semakin awal).'),
+                                    ]),
+                                ])
+                                ->collapsed(),
                         ]),
                     Tab::make('SEO & Metadata')
                         ->icon('heroicon-o-magnifying-glass')
