@@ -11,10 +11,7 @@ class LandingPageSettings extends Settings
     public string $hero_subtitle;
     public string $hero_description;
     public ?string $hero_image;
-    public string $hero_cta_text;
-    public string $hero_cta_url;
-    public string $hero_secondary_cta_text;
-    public string $hero_secondary_cta_url;
+    public string $hero_buttons;
 
     // Features Section
     public bool $show_features;

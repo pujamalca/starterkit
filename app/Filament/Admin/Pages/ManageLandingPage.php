@@ -6,6 +6,7 @@ use App\Settings\LandingPageSettings;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -78,28 +79,32 @@ class ManageLandingPage extends Page implements HasForms
                                     ])->columns(2),
                                 Section::make('Call to Action Buttons')
                                     ->schema([
-                                        Grid::make(2)->schema([
-                                            TextInput::make('hero_cta_text')
-                                                ->label('Teks Tombol Utama')
-                                                ->required()
-                                                ->maxLength(50),
-                                            TextInput::make('hero_cta_url')
-                                                ->label('URL Tombol Utama')
-                                                ->required()
-                                                ->maxLength(255)
-                                                ->url(),
-                                        ]),
-                                        Grid::make(2)->schema([
-                                            TextInput::make('hero_secondary_cta_text')
-                                                ->label('Teks Tombol Sekunder')
-                                                ->required()
-                                                ->maxLength(50),
-                                            TextInput::make('hero_secondary_cta_url')
-                                                ->label('URL Tombol Sekunder')
-                                                ->required()
-                                                ->maxLength(255)
-                                                ->url(),
-                                        ]),
+                                        Repeater::make('hero_buttons')
+                                            ->label('Tombol Hero')
+                                            ->schema([
+                                                TextInput::make('text')
+                                                    ->label('Teks Tombol')
+                                                    ->required()
+                                                    ->maxLength(50),
+                                                TextInput::make('url')
+                                                    ->label('URL')
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->placeholder('/blog atau https://example.com')
+                                                    ->helperText('Bisa menggunakan relative URL seperti /blog atau full URL'),
+                                                Select::make('style')
+                                                    ->label('Style')
+                                                    ->options([
+                                                        'primary' => 'Primary',
+                                                        'secondary' => 'Secondary',
+                                                    ])
+                                                    ->default('primary')
+                                                    ->required(),
+                                            ])
+                                            ->columns(3)
+                                            ->defaultItems(2)
+                                            ->addActionLabel('Tambah Tombol')
+                                            ->collapsible(),
                                     ]),
                             ]),
 
@@ -114,7 +119,7 @@ class ManageLandingPage extends Page implements HasForms
                                     ->schema([
                                         TextInput::make('features_title')
                                             ->label('Judul Section')
-                                            ->required()
+                                            ->required(fn ($get) => $get('show_features'))
                                             ->maxLength(255),
                                         TextInput::make('features_subtitle')
                                             ->label('Sub Judul')
@@ -152,7 +157,7 @@ class ManageLandingPage extends Page implements HasForms
                                     ->schema([
                                         TextInput::make('blog_title')
                                             ->label('Judul Section')
-                                            ->required()
+                                            ->required(fn ($get) => $get('show_blog'))
                                             ->maxLength(255),
                                         TextInput::make('blog_subtitle')
                                             ->label('Sub Judul')
@@ -163,7 +168,7 @@ class ManageLandingPage extends Page implements HasForms
                                             ->minValue(1)
                                             ->maxValue(12)
                                             ->default(6)
-                                            ->required(),
+                                            ->required(fn ($get) => $get('show_blog')),
                                     ])->columns(2)
                                     ->visible(fn ($get) => $get('show_blog')),
                             ]),
@@ -179,7 +184,7 @@ class ManageLandingPage extends Page implements HasForms
                                     ->schema([
                                         TextInput::make('cta_title')
                                             ->label('Judul')
-                                            ->required()
+                                            ->required(fn ($get) => $get('show_cta'))
                                             ->maxLength(255),
                                         Textarea::make('cta_description')
                                             ->label('Deskripsi')
@@ -188,13 +193,14 @@ class ManageLandingPage extends Page implements HasForms
                                         Grid::make(2)->schema([
                                             TextInput::make('cta_button_text')
                                                 ->label('Teks Tombol')
-                                                ->required()
+                                                ->required(fn ($get) => $get('show_cta'))
                                                 ->maxLength(50),
                                             TextInput::make('cta_button_url')
                                                 ->label('URL Tombol')
-                                                ->required()
+                                                ->required(fn ($get) => $get('show_cta'))
                                                 ->maxLength(255)
-                                                ->url(),
+                                                ->placeholder('/blog atau https://example.com')
+                                                ->helperText('Bisa menggunakan relative URL seperti /blog atau full URL'),
                                         ]),
                                         ColorPicker::make('cta_background_color')
                                             ->label('Warna Background')
@@ -218,15 +224,19 @@ class ManageLandingPage extends Page implements HasForms
             $features = is_array($decoded) ? $decoded : [];
         }
 
+        // Decode hero_buttons JSON string to array
+        $heroButtons = [];
+        if (!empty($settings->hero_buttons)) {
+            $decoded = json_decode($settings->hero_buttons, true);
+            $heroButtons = is_array($decoded) ? $decoded : [];
+        }
+
         return [
             'hero_title' => $settings->hero_title,
             'hero_subtitle' => $settings->hero_subtitle,
             'hero_description' => $settings->hero_description,
             'hero_image' => $this->sanitizeMediaValue($settings->hero_image),
-            'hero_cta_text' => $settings->hero_cta_text,
-            'hero_cta_url' => $settings->hero_cta_url,
-            'hero_secondary_cta_text' => $settings->hero_secondary_cta_text,
-            'hero_secondary_cta_url' => $settings->hero_secondary_cta_url,
+            'hero_buttons' => $heroButtons,
             'show_features' => $settings->show_features,
             'features_title' => $settings->features_title,
             'features_subtitle' => $settings->features_subtitle,
@@ -256,6 +266,13 @@ class ManageLandingPage extends Page implements HasForms
             $data['features'] = json_encode($data['features']);
         } else {
             $data['features'] = json_encode([]);
+        }
+
+        // Encode hero_buttons array to JSON string
+        if (isset($data['hero_buttons']) && is_array($data['hero_buttons'])) {
+            $data['hero_buttons'] = json_encode($data['hero_buttons']);
+        } else {
+            $data['hero_buttons'] = json_encode([]);
         }
 
         $settings = app(LandingPageSettings::class);

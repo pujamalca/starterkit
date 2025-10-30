@@ -17,53 +17,89 @@
         </div>
 
         <div class="container mx-auto px-4 py-20 md:py-32 relative z-10">
-            <div class="max-w-4xl mx-auto text-center">
-                <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                    {{ $landingSettings->hero_title }}
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                {{-- Hero Content --}}
+                <div class="text-center md:text-left">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">
+                        {{ $landingSettings->hero_title }}
+                    </h1>
                     @if($landingSettings->hero_subtitle)
-                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-orange-400">
+                        <h2 class="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-orange-400">
                             {{ $landingSettings->hero_subtitle }}
-                        </span>
+                        </h2>
                     @endif
-                </h1>
-                <p class="text-xl md:text-2xl text-blue-100 mb-8 leading-relaxed">
-                    {{ $landingSettings->hero_description }}
-                </p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href="{{ $landingSettings->hero_cta_url }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 rounded-lg font-bold hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                        {{ $landingSettings->hero_cta_text }}
-                    </a>
-                    <a href="{{ $landingSettings->hero_secondary_cta_url }}" class="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 bg-opacity-20 backdrop-blur-sm border-2 border-white border-opacity-30 text-white rounded-lg font-bold hover:bg-opacity-30 transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                        {{ $landingSettings->hero_secondary_cta_text }}
-                    </a>
+                    <p class="text-xl md:text-2xl text-blue-100 mb-8 leading-relaxed">
+                        {{ $landingSettings->hero_description }}
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center md:items-start md:justify-start justify-center gap-4">
+                        @php
+                            // Decode hero_buttons from JSON string
+                            $heroButtons = [];
+                            if (!empty($landingSettings->hero_buttons)) {
+                                $decoded = json_decode($landingSettings->hero_buttons, true);
+                                $heroButtons = is_array($decoded) ? $decoded : [];
+                            }
+                        @endphp
+
+                        @foreach($heroButtons as $button)
+                            @if($button['style'] === 'primary')
+                                <a href="{{ $button['url'] }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 rounded-lg font-bold hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                    {{ $button['text'] }}
+                                </a>
+                            @else
+                                <a href="{{ $button['url'] }}" class="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 bg-opacity-20 backdrop-blur-sm border-2 border-white border-opacity-30 text-white rounded-lg font-bold hover:bg-opacity-30 transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                    </svg>
+                                    {{ $button['text'] }}
+                                </a>
+                            @endif
+                        @endforeach
+                    </div>
                 </div>
 
-                {{-- Stats --}}
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16">
-                    <div class="text-center">
-                        <div class="text-4xl font-bold text-yellow-300">{{ \App\Models\Post::published()->count() }}+</div>
-                        <div class="text-blue-200 mt-2">Blog Posts</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-4xl font-bold text-yellow-300">{{ \App\Models\Category::count() }}+</div>
-                        <div class="text-blue-200 mt-2">Categories</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-4xl font-bold text-yellow-300">10+</div>
-                        <div class="text-blue-200 mt-2">API Endpoints</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-4xl font-bold text-yellow-300">100%</div>
-                        <div class="text-blue-200 mt-2">Open Source</div>
-                    </div>
+                {{-- Hero Image --}}
+                <div class="relative">
+                    @if($landingSettings->hero_image)
+                        <div class="relative rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300">
+                            <img src="{{ asset('storage/' . $landingSettings->hero_image) }}"
+                                 alt="{{ $landingSettings->hero_title }}"
+                                 class="w-full h-auto object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent"></div>
+                        </div>
+                    @else
+                        <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-blue-500 to-purple-600 aspect-square flex items-center justify-center">
+                            <svg class="w-32 h-32 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                    @endif
                 </div>
             </div>
+
+            {{-- Stats --}}
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 max-w-4xl mx-auto">
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-yellow-300">{{ \App\Models\Post::published()->count() }}+</div>
+                    <div class="text-blue-200 mt-2">Blog Posts</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-yellow-300">{{ \App\Models\Category::count() }}+</div>
+                    <div class="text-blue-200 mt-2">Categories</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-yellow-300">10+</div>
+                    <div class="text-blue-200 mt-2">API Endpoints</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-yellow-300">100%</div>
+                    <div class="text-blue-200 mt-2">Open Source</div>
+                </div>
+            </div>
+        </div>
         </div>
 
         {{-- Wave Divider --}}
