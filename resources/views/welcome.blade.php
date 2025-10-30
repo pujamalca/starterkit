@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+    $landingSettings = app(\App\Settings\LandingPageSettings::class);
+@endphp
+
 @section('title', 'Home - ' . config('app.name'))
 @section('meta_description', 'Laravel Starter Kit dengan Filament Admin Panel, RESTful API, Content Management, dan fitur modern untuk mempercepat development aplikasi web Anda.')
 
@@ -15,32 +19,28 @@
         <div class="container mx-auto px-4 py-20 md:py-32 relative z-10">
             <div class="max-w-4xl mx-auto text-center">
                 <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                    Laravel Starter Kit yang
-                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-orange-400">
-                        Lengkap & Modern
-                    </span>
+                    {{ $landingSettings->hero_title }}
+                    @if($landingSettings->hero_subtitle)
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-orange-400">
+                            {{ $landingSettings->hero_subtitle }}
+                        </span>
+                    @endif
                 </h1>
                 <p class="text-xl md:text-2xl text-blue-100 mb-8 leading-relaxed">
-                    Percepat development aplikasi web Anda dengan Filament Admin Panel, RESTful API, Content Management System, dan fitur-fitur profesional yang siap pakai.
+                    {{ $landingSettings->hero_description }}
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href="/admin" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 rounded-lg font-bold hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl">
+                    <a href="{{ $landingSettings->hero_cta_url }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 rounded-lg font-bold hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
-                        Admin Panel
+                        {{ $landingSettings->hero_cta_text }}
                     </a>
-                    <a href="/blog" class="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 bg-opacity-20 backdrop-blur-sm border-2 border-white border-opacity-30 text-white rounded-lg font-bold hover:bg-opacity-30 transition-all">
+                    <a href="{{ $landingSettings->hero_secondary_cta_url }}" class="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 bg-opacity-20 backdrop-blur-sm border-2 border-white border-opacity-30 text-white rounded-lg font-bold hover:bg-opacity-30 transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                         </svg>
-                        Lihat Blog
-                    </a>
-                    <a href="/api/documentation" class="inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-bold hover:bg-white hover:text-blue-600 transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-                        </svg>
-                        API Docs
+                        {{ $landingSettings->hero_secondary_cta_text }}
                     </a>
                 </div>
 
@@ -75,122 +75,90 @@
     </section>
 
     {{-- Features Section --}}
-    <section class="py-20 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Fitur Unggulan</h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Dibangun dengan teknologi modern dan best practices untuk memastikan aplikasi Anda scalable dan maintainable.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {{-- Feature 1 --}}
-                <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-gray-200">
-                    <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Filament Admin Panel</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        Interface admin yang powerful dan modern dengan form builder, table builder, dan resource management yang lengkap.
-                    </p>
+    @if($landingSettings->show_features)
+        <section class="py-20 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{{ $landingSettings->features_title }}</h2>
+                    @if($landingSettings->features_subtitle)
+                        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                            {{ $landingSettings->features_subtitle }}
+                        </p>
+                    @endif
                 </div>
 
-                {{-- Feature 2 --}}
-                <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-gray-200">
-                    <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">RESTful API</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        API yang terstruktur dengan versioning, authentication (Sanctum), throttling, dan dokumentasi Swagger/OpenAPI.
-                    </p>
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @php
+                        // Decode features from JSON string
+                        $features = [];
+                        if (!empty($landingSettings->features)) {
+                            $decoded = json_decode($landingSettings->features, true);
+                            $features = is_array($decoded) ? $decoded : [];
+                        }
 
-                {{-- Feature 3 --}}
-                <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-gray-200">
-                    <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Content Management</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        Sistem manajemen konten lengkap dengan posts, pages, categories, tags, comments, dan media library.
-                    </p>
-                </div>
+                        $colors = [
+                            'from-blue-500 to-blue-600',
+                            'from-green-500 to-green-600',
+                            'from-purple-500 to-purple-600',
+                            'from-red-500 to-red-600',
+                            'from-yellow-500 to-yellow-600',
+                            'from-indigo-500 to-indigo-600',
+                            'from-pink-500 to-pink-600',
+                            'from-teal-500 to-teal-600',
+                        ];
+                    @endphp
 
-                {{-- Feature 4 --}}
-                <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-gray-200">
-                    <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Authentication & Authorization</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        Sistem keamanan yang robust dengan Laravel Sanctum dan Spatie Permission untuk role-based access control.
-                    </p>
-                </div>
-
-                {{-- Feature 5 --}}
-                <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-gray-200">
-                    <div class="w-14 h-14 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Activity Logging</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        Track semua aktivitas user dengan Spatie Activity Log untuk audit trail dan monitoring yang comprehensive.
-                    </p>
-                </div>
-
-                {{-- Feature 6 --}}
-                <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-gray-200">
-                    <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Media Library</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        Manajemen file yang mudah dengan Spatie Media Library untuk upload, organize, dan serve media files.
-                    </p>
+                    @if(count($features) > 0)
+                        @foreach($features as $index => $feature)
+                        <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-gray-200">
+                            <div class="w-14 h-14 bg-gradient-to-br {{ $colors[$index % count($colors)] }} rounded-lg flex items-center justify-center mb-6">
+                                @if(isset($feature['icon']) && $feature['icon'])
+                                    <x-dynamic-component :component="$feature['icon']" class="w-7 h-7 text-white" />
+                                @else
+                                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                @endif
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3">{{ $feature['title'] }}</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                {{ $feature['description'] ?? '' }}
+                            </p>
+                        </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
 
     {{-- Latest Blog Posts --}}
-    @php
-        $latestPosts = \App\Models\Post::published()
-            ->with(['author', 'category'])
-            ->latest('published_at')
-            ->take(3)
-            ->get();
-    @endphp
+    @if($landingSettings->show_blog)
+        @php
+            $latestPosts = \App\Models\Post::published()
+                ->with(['author', 'category'])
+                ->latest('published_at')
+                ->take($landingSettings->blog_posts_count)
+                ->get();
+        @endphp
 
-    @if($latestPosts->count() > 0)
-        <section class="py-20 bg-white">
-            <div class="container mx-auto px-4">
-                <div class="flex items-center justify-between mb-12">
-                    <div>
-                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Blog Terbaru</h2>
-                        <p class="text-xl text-gray-600">Artikel dan tutorial terkini</p>
+        @if($latestPosts->count() > 0)
+            <section class="py-20 bg-white">
+                <div class="container mx-auto px-4">
+                    <div class="flex items-center justify-between mb-12">
+                        <div>
+                            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{{ $landingSettings->blog_title }}</h2>
+                            @if($landingSettings->blog_subtitle)
+                                <p class="text-xl text-gray-600">{{ $landingSettings->blog_subtitle }}</p>
+                            @endif
+                        </div>
+                        <a href="/blog" class="hidden md:inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            Lihat Semua
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </a>
                     </div>
-                    <a href="/blog" class="hidden md:inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                        Lihat Semua
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                        </svg>
-                    </a>
-                </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach($latestPosts as $post)
@@ -236,48 +204,47 @@
                     @endforeach
                 </div>
 
-                <div class="text-center mt-12 md:hidden">
-                    <a href="/blog" class="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                        Lihat Semua Blog
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                        </svg>
-                    </a>
+                    <div class="text-center mt-12 md:hidden">
+                        <a href="/blog" class="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            Lihat Semua Blog
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        @endif
+    @endif
+
+    {{-- CTA Section --}}
+    @if($landingSettings->show_cta)
+        <section class="py-20 text-white relative overflow-hidden" style="background: {{ $landingSettings->cta_background_color }};">
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute top-0 left-1/4 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+                <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+            </div>
+
+            <div class="container mx-auto px-4 relative z-10">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6">
+                        {{ $landingSettings->cta_title }}
+                    </h2>
+                    @if($landingSettings->cta_description)
+                        <p class="text-xl opacity-90 mb-8 leading-relaxed">
+                            {{ $landingSettings->cta_description }}
+                        </p>
+                    @endif
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a href="{{ $landingSettings->cta_button_url }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 rounded-lg font-bold hover:bg-gray-100 transition-all shadow-xl">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            {{ $landingSettings->cta_button_text }}
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
     @endif
-
-    {{-- CTA Section --}}
-    <section class="py-20 bg-gradient-to-br from-blue-600 to-indigo-700 text-white relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-0 left-1/4 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-            <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-        </div>
-
-        <div class="container mx-auto px-4 relative z-10">
-            <div class="max-w-3xl mx-auto text-center">
-                <h2 class="text-3xl md:text-4xl font-bold mb-6">
-                    Siap Memulai Project Anda?
-                </h2>
-                <p class="text-xl text-blue-100 mb-8 leading-relaxed">
-                    Clone repository ini dan mulai building aplikasi web yang amazing dengan foundation yang solid dan best practices yang terbukti.
-                </p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href="https://github.com" target="_blank" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 rounded-lg font-bold hover:bg-blue-50 transition-all shadow-xl">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/>
-                        </svg>
-                        Clone di GitHub
-                    </a>
-                    <a href="/admin" class="inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-bold hover:bg-white hover:text-blue-600 transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                        Coba Admin Panel
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
 @endsection
