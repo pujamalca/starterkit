@@ -33,6 +33,12 @@ class LandingPageSettings extends Settings
     public string $cta_button_url;
     public string $cta_background_color;
 
+    // FAQ Section
+    public bool $show_faq;
+    public string $faq_title;
+    public string $faq_subtitle;
+    public string $faqs;
+
     public static function group(): string
     {
         return 'landing_page';

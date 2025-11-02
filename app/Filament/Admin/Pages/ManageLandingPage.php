@@ -208,6 +208,44 @@ class ManageLandingPage extends Page implements HasForms
                                     ])->columns(2)
                                     ->visible(fn ($get) => $get('show_cta')),
                             ]),
+
+                        Tab::make('FAQ Section')
+                            ->icon('heroicon-o-question-mark-circle')
+                            ->schema([
+                                Toggle::make('show_faq')
+                                    ->label('Tampilkan Section FAQ')
+                                    ->default(true)
+                                    ->live(),
+                                Section::make('FAQ Content')
+                                    ->schema([
+                                        TextInput::make('faq_title')
+                                            ->label('Judul Section')
+                                            ->required(fn ($get) => $get('show_faq'))
+                                            ->maxLength(255),
+                                        TextInput::make('faq_subtitle')
+                                            ->label('Sub Judul')
+                                            ->maxLength(255),
+                                        Repeater::make('faqs')
+                                            ->label('Daftar FAQ')
+                                            ->schema([
+                                                TextInput::make('question')
+                                                    ->label('Pertanyaan')
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->columnSpanFull(),
+                                                Textarea::make('answer')
+                                                    ->label('Jawaban')
+                                                    ->required()
+                                                    ->rows(3)
+                                                    ->columnSpanFull(),
+                                            ])
+                                            ->defaultItems(3)
+                                            ->addActionLabel('Tambah FAQ')
+                                            ->collapsible()
+                                            ->itemLabel(fn (array $state): ?string => $state['question'] ?? null),
+                                    ])->columns(2)
+                                    ->visible(fn ($get) => $get('show_faq')),
+                            ]),
                     ]),
             ])
             ->statePath('data');
@@ -231,6 +269,13 @@ class ManageLandingPage extends Page implements HasForms
             $heroButtons = is_array($decoded) ? $decoded : [];
         }
 
+        // Decode faqs JSON string to array
+        $faqs = [];
+        if (!empty($settings->faqs)) {
+            $decoded = json_decode($settings->faqs, true);
+            $faqs = is_array($decoded) ? $decoded : [];
+        }
+
         return [
             'hero_title' => $settings->hero_title,
             'hero_subtitle' => $settings->hero_subtitle,
@@ -251,6 +296,10 @@ class ManageLandingPage extends Page implements HasForms
             'cta_button_text' => $settings->cta_button_text,
             'cta_button_url' => $settings->cta_button_url,
             'cta_background_color' => $settings->cta_background_color,
+            'show_faq' => $settings->show_faq,
+            'faq_title' => $settings->faq_title,
+            'faq_subtitle' => $settings->faq_subtitle,
+            'faqs' => $faqs,
         ];
     }
 
@@ -273,6 +322,13 @@ class ManageLandingPage extends Page implements HasForms
             $data['hero_buttons'] = json_encode($data['hero_buttons']);
         } else {
             $data['hero_buttons'] = json_encode([]);
+        }
+
+        // Encode faqs array to JSON string
+        if (isset($data['faqs']) && is_array($data['faqs'])) {
+            $data['faqs'] = json_encode($data['faqs']);
+        } else {
+            $data['faqs'] = json_encode([]);
         }
 
         $settings = app(LandingPageSettings::class);

@@ -283,4 +283,74 @@
             </div>
         </section>
     @endif
+
+    {{-- FAQ Section --}}
+    @if($landingSettings->show_faq)
+        <section class="py-20 bg-gradient-to-b from-white to-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto">
+                    <div class="text-center mb-16">
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                            {{ $landingSettings->faq_title }}
+                        </h2>
+                        @if($landingSettings->faq_subtitle)
+                            <p class="text-xl text-gray-600 leading-relaxed">
+                                {{ $landingSettings->faq_subtitle }}
+                            </p>
+                        @endif
+                    </div>
+
+                    @php
+                        // Decode faqs from JSON string
+                        $faqs = [];
+                        if (!empty($landingSettings->faqs)) {
+                            $decoded = json_decode($landingSettings->faqs, true);
+                            $faqs = is_array($decoded) ? $decoded : [];
+                        }
+                    @endphp
+
+                    <div class="space-y-4">
+                        @foreach($faqs as $index => $faq)
+                            <div x-data="{ open: {{ $index === 0 ? 'true' : 'false' }} }"
+                                 class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
+                                <button @click="open = !open"
+                                        class="w-full px-6 py-5 text-left flex items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
+                                    <span class="text-lg font-semibold text-gray-900 flex-1">
+                                        {{ $faq['question'] }}
+                                    </span>
+                                    <svg class="w-6 h-6 text-blue-600 transform transition-transform flex-shrink-0"
+                                         :class="{ 'rotate-180': open }"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                <div x-show="open"
+                                     x-collapse
+                                     class="px-6 pb-5">
+                                    <div class="text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
+                                        {{ $faq['answer'] }}
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    {{-- Contact CTA in FAQ --}}
+                    <div class="mt-12 text-center p-8 bg-blue-50 rounded-2xl border border-blue-100">
+                        <p class="text-lg text-gray-700 mb-4">
+                            Masih ada pertanyaan lain?
+                        </p>
+                        <a href="/blog" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            Hubungi Kami
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    @endif
 @endsection
