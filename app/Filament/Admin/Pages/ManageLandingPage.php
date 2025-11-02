@@ -60,7 +60,7 @@ class ManageLandingPage extends Page implements HasForms
                                         Repeater::make('navigation_menus')
                                             ->label('Daftar Menu')
                                             ->schema([
-                                                Grid::make(3)->schema([
+                                                Grid::make(2)->schema([
                                                     TextInput::make('label')
                                                         ->label('Label Menu')
                                                         ->required()
@@ -71,13 +71,7 @@ class ManageLandingPage extends Page implements HasForms
                                                         ->required()
                                                         ->maxLength(255)
                                                         ->placeholder('/ atau /blog')
-                                                        ->helperText('Gunakan / untuk home, /blog untuk blog, dll'),
-                                                    TextInput::make('order')
-                                                        ->label('Urutan')
-                                                        ->numeric()
-                                                        ->required()
-                                                        ->default(1)
-                                                        ->minValue(1),
+                                                        ->helperText('Gunakan # untuk menu dengan sub-menu, / untuk home, /blog untuk blog, dll'),
                                                 ]),
                                                 Grid::make(3)->schema([
                                                     Select::make('type')
@@ -103,13 +97,36 @@ class ManageLandingPage extends Page implements HasForms
                                                         ->label('Tampilkan')
                                                         ->default(true),
                                                 ]),
+                                                Repeater::make('children')
+                                                    ->label('Sub Menu')
+                                                    ->schema([
+                                                        TextInput::make('label')
+                                                            ->label('Label Sub Menu')
+                                                            ->required()
+                                                            ->maxLength(50)
+                                                            ->placeholder('Sub Menu 1'),
+                                                        TextInput::make('url')
+                                                            ->label('URL')
+                                                            ->required()
+                                                            ->maxLength(255)
+                                                            ->placeholder('/pages/about'),
+                                                        Toggle::make('show')
+                                                            ->label('Tampilkan')
+                                                            ->default(true),
+                                                    ])
+                                                    ->columns(3)
+                                                    ->reorderable()
+                                                    ->collapsible()
+                                                    ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
+                                                    ->addActionLabel('Tambah Sub Menu')
+                                                    ->helperText('Drag & drop untuk mengatur urutan sub-menu'),
                                             ])
                                             ->defaultItems(2)
                                             ->addActionLabel('Tambah Menu')
                                             ->collapsible()
                                             ->reorderable()
-                                            ->orderColumn('order')
-                                            ->itemLabel(fn (array $state): ?string => $state['label'] ?? null),
+                                            ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
+                                            ->helperText('Drag & drop untuk mengatur urutan menu'),
                                     ]),
                             ]),
 

@@ -79,6 +79,35 @@
                                     </div>
                                 </div>
                             </div>
+                        @elseif(!empty($menu['children']) && count($menu['children']) > 0)
+                            {{-- Menu with Children (Sub Menu) --}}
+                            <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                                <button type="button" @click="open = !open" class="flex items-center gap-1 text-gray-600 hover:text-gray-900 transition-colors font-medium">
+                                    <span>{{ $menu['label'] }}</span>
+                                    <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                <div x-show="open"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 scale-95"
+                                     x-transition:enter-end="opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 scale-100"
+                                     x-transition:leave-end="opacity-0 scale-95"
+                                     class="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+                                     style="display: none;">
+                                    <div class="py-2">
+                                        @foreach($menu['children'] as $child)
+                                            @if($child['show'] ?? true)
+                                                <a href="{{ $child['url'] }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                                    {{ $child['label'] }}
+                                                </a>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
                         @else
                             {{-- Regular Link --}}
                             <a href="{{ $menu['url'] }}" class="text-gray-600 hover:text-gray-900 transition-colors font-medium {{ request()->is(trim($menu['url'], '/')) ? 'text-blue-600' : '' }}">
