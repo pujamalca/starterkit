@@ -8,13 +8,30 @@
 
     // Get pages for header
     $headerPages = \App\Models\Page::showInHeader()->get();
+
+    // Get navigation menus from landing settings
+    $landingSettings = app(\App\Settings\LandingPageSettings::class);
+    $navigationMenus = [];
+    if (!empty($landingSettings->navigation_menus)) {
+        $decoded = json_decode($landingSettings->navigation_menus, true);
+        $allMenus = is_array($decoded) ? collect($decoded)->where('show', true)->sortBy('order')->values()->all() : [];
+
+        // Group menus by position
+        $navigationMenus = [
+            'left' => collect($allMenus)->where('position', 'left')->values()->all(),
+            'center' => collect($allMenus)->where('position', 'center')->values()->all(),
+            'right' => collect($allMenus)->where('position', 'right')->values()->all(),
+        ];
+    } else {
+        $navigationMenus = ['left' => [], 'center' => [], 'right' => []];
+    }
 @endphp
 
 <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
     <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between h-16">
+        <div class="flex items-center h-16">
             {{-- Logo / Brand --}}
-            <div class="flex items-center gap-8">
+            <div class="flex items-center gap-8 flex-shrink-0">
                 <a href="/" class="flex items-center gap-2">
                     @if($siteLogo)
                         <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" class="h-8 w-auto object-contain">
@@ -26,44 +43,49 @@
                     <span class="text-xl font-bold text-gray-900">{{ $siteName }}</span>
                 </a>
 
-                {{-- Desktop Navigation --}}
+                {{-- Desktop Navigation LEFT --}}
                 <nav class="hidden md:flex items-center gap-6">
-                    <a href="/" class="text-gray-600 hover:text-gray-900 transition-colors font-medium {{ request()->is('/') ? 'text-blue-600' : '' }}">
-                        Home
-                    </a>
-
-                    {{-- Blog Dropdown --}}
-                    <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                        <button type="button" @click="open = !open" class="flex items-center gap-1 text-gray-600 hover:text-gray-900 transition-colors font-medium {{ request()->is('blog*') ? 'text-blue-600' : '' }}">
-                            <span>Blog</span>
-                            <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                        <div x-show="open"
-                             x-transition:enter="transition ease-out duration-200"
-                             x-transition:enter-start="opacity-0 scale-95"
-                             x-transition:enter-end="opacity-100 scale-100"
-                             x-transition:leave="transition ease-in duration-150"
-                             x-transition:leave-start="opacity-100 scale-100"
-                             x-transition:leave-end="opacity-0 scale-95"
-                             class="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
-                             style="display: none;">
-                            <div class="py-2">
-                                <a href="/blog" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                                    Semua Artikel
-                                </a>
-                                @if($categories->count() > 0)
-                                    <div class="border-t border-gray-100 my-2"></div>
-                                    @foreach($categories as $category)
-                                        <a href="{{ route('blog.index', ['category' => $category->slug]) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                                            {{ $category->name }}
+                    @foreach($navigationMenus['left'] as $menu)
+                        @if($menu['type'] === 'blog_dropdown')
+                            {{-- Blog Dropdown --}}
+                            <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                                <button type="button" @click="open = !open" class="flex items-center gap-1 text-gray-600 hover:text-gray-900 transition-colors font-medium {{ request()->is('blog*') ? 'text-blue-600' : '' }}">
+                                    <span>{{ $menu['label'] }}</span>
+                                    <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                <div x-show="open"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 scale-95"
+                                     x-transition:enter-end="opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 scale-100"
+                                     x-transition:leave-end="opacity-0 scale-95"
+                                     class="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+                                     style="display: none;">
+                                    <div class="py-2">
+                                        <a href="{{ $menu['url'] }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                            Semua Artikel
                                         </a>
-                                    @endforeach
-                                @endif
+                                        @if($categories->count() > 0)
+                                            <div class="border-t border-gray-100 my-2"></div>
+                                            @foreach($categories as $category)
+                                                <a href="{{ route('blog.index', ['category' => $category->slug]) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                                    {{ $category->name }}
+                                                </a>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        @else
+                            {{-- Regular Link --}}
+                            <a href="{{ $menu['url'] }}" class="text-gray-600 hover:text-gray-900 transition-colors font-medium {{ request()->is(trim($menu['url'], '/')) ? 'text-blue-600' : '' }}">
+                                {{ $menu['label'] }}
+                            </a>
+                        @endif
+                    @endforeach
 
                     {{-- Dynamic Pages --}}
                     @foreach($headerPages as $headerPage)
@@ -74,8 +96,98 @@
                 </nav>
             </div>
 
-            {{-- Right Side Actions --}}
-            <div class="flex items-center gap-4">
+            {{-- Desktop Navigation CENTER --}}
+            <nav class="hidden md:flex items-center gap-6 flex-1 justify-center">
+                @foreach($navigationMenus['center'] as $menu)
+                    @if($menu['type'] === 'blog_dropdown')
+                        {{-- Blog Dropdown --}}
+                        <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                            <button type="button" @click="open = !open" class="flex items-center gap-1 text-gray-600 hover:text-gray-900 transition-colors font-medium {{ request()->is('blog*') ? 'text-blue-600' : '' }}">
+                                <span>{{ $menu['label'] }}</span>
+                                <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div x-show="open"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                 x-transition:leave-end="opacity-0 scale-95"
+                                 class="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+                                 style="display: none;">
+                                <div class="py-2">
+                                    <a href="{{ $menu['url'] }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                        Semua Artikel
+                                    </a>
+                                    @if($categories->count() > 0)
+                                        <div class="border-t border-gray-100 my-2"></div>
+                                        @foreach($categories as $category)
+                                            <a href="{{ route('blog.index', ['category' => $category->slug]) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                                {{ $category->name }}
+                                            </a>
+                                        @endforeach
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        {{-- Regular Link --}}
+                        <a href="{{ $menu['url'] }}" class="text-gray-600 hover:text-gray-900 transition-colors font-medium {{ request()->is(trim($menu['url'], '/')) ? 'text-blue-600' : '' }}">
+                            {{ $menu['label'] }}
+                        </a>
+                    @endif
+                @endforeach
+            </nav>
+
+            {{-- Desktop Navigation RIGHT + Actions --}}
+            <div class="flex items-center gap-4 flex-shrink-0">
+                {{-- Navigation RIGHT --}}
+                <nav class="hidden md:flex items-center gap-6">
+                    @foreach($navigationMenus['right'] as $menu)
+                        @if($menu['type'] === 'blog_dropdown')
+                            {{-- Blog Dropdown --}}
+                            <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                                <button type="button" @click="open = !open" class="flex items-center gap-1 text-gray-600 hover:text-gray-900 transition-colors font-medium {{ request()->is('blog*') ? 'text-blue-600' : '' }}">
+                                    <span>{{ $menu['label'] }}</span>
+                                    <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                <div x-show="open"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 scale-95"
+                                     x-transition:enter-end="opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 scale-100"
+                                     x-transition:leave-end="opacity-0 scale-95"
+                                     class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+                                     style="display: none;">
+                                    <div class="py-2">
+                                        <a href="{{ $menu['url'] }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                            Semua Artikel
+                                        </a>
+                                        @if($categories->count() > 0)
+                                            <div class="border-t border-gray-100 my-2"></div>
+                                            @foreach($categories as $category)
+                                                <a href="{{ route('blog.index', ['category' => $category->slug]) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                                    {{ $category->name }}
+                                                </a>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            {{-- Regular Link --}}
+                            <a href="{{ $menu['url'] }}" class="text-gray-600 hover:text-gray-900 transition-colors font-medium {{ request()->is(trim($menu['url'], '/')) ? 'text-blue-600' : '' }}">
+                                {{ $menu['label'] }}
+                            </a>
+                        @endif
+                    @endforeach
+                </nav>
+
                 {{-- Search Button --}}
                 <button type="button" class="hidden md:flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,34 +217,47 @@
         {{-- Mobile Navigation --}}
         <nav class="md:hidden hidden pb-4" id="mobile-menu">
             <div class="flex flex-col gap-2">
-                <a href="/" class="px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors {{ request()->is('/') ? 'text-blue-600 bg-blue-50' : '' }}">
-                    Home
-                </a>
-
-                {{-- Blog with categories --}}
-                <div x-data="{ openBlog: false }">
-                    <button type="button" @click="openBlog = !openBlog" class="w-full px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-between {{ request()->is('blog*') ? 'text-blue-600 bg-blue-50' : '' }}">
-                        <span>Blog</span>
-                        <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': openBlog }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div x-show="openBlog"
-                         x-transition
-                         class="ml-4 mt-1 space-y-1"
-                         style="display: none;">
-                        <a href="/blog" class="block px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                            Semua Artikel
-                        </a>
-                        @if($categories->count() > 0)
-                            @foreach($categories as $category)
-                                <a href="{{ route('blog.index', ['category' => $category->slug]) }}" class="block px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                                    {{ $category->name }}
+                @php
+                    // Combine all menus for mobile (left, center, right)
+                    $allMobileMenus = array_merge(
+                        $navigationMenus['left'] ?? [],
+                        $navigationMenus['center'] ?? [],
+                        $navigationMenus['right'] ?? []
+                    );
+                @endphp
+                @foreach($allMobileMenus as $menu)
+                    @if($menu['type'] === 'blog_dropdown')
+                        {{-- Blog with categories --}}
+                        <div x-data="{ openBlog: false }">
+                            <button type="button" @click="openBlog = !openBlog" class="w-full px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-between {{ request()->is('blog*') ? 'text-blue-600 bg-blue-50' : '' }}">
+                                <span>{{ $menu['label'] }}</span>
+                                <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': openBlog }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div x-show="openBlog"
+                                 x-transition
+                                 class="ml-4 mt-1 space-y-1"
+                                 style="display: none;">
+                                <a href="{{ $menu['url'] }}" class="block px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+                                    Semua Artikel
                                 </a>
-                            @endforeach
-                        @endif
-                    </div>
-                </div>
+                                @if($categories->count() > 0)
+                                    @foreach($categories as $category)
+                                        <a href="{{ route('blog.index', ['category' => $category->slug]) }}" class="block px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+                                            {{ $category->name }}
+                                        </a>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    @else
+                        {{-- Regular Link --}}
+                        <a href="{{ $menu['url'] }}" class="px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors {{ request()->is(trim($menu['url'], '/')) ? 'text-blue-600 bg-blue-50' : '' }}">
+                            {{ $menu['label'] }}
+                        </a>
+                    @endif
+                @endforeach
 
                 {{-- Dynamic Pages --}}
                 @foreach($headerPages as $headerPage)

@@ -51,6 +51,68 @@ class ManageLandingPage extends Page implements HasForms
             ->components([
                 Tabs::make('landingPageTabs')
                     ->tabs([
+                        Tab::make('Navigation')
+                            ->icon('heroicon-o-bars-3')
+                            ->schema([
+                                Section::make('Menu Navigasi')
+                                    ->description('Atur menu navigasi yang tampil di header website')
+                                    ->schema([
+                                        Repeater::make('navigation_menus')
+                                            ->label('Daftar Menu')
+                                            ->schema([
+                                                Grid::make(3)->schema([
+                                                    TextInput::make('label')
+                                                        ->label('Label Menu')
+                                                        ->required()
+                                                        ->maxLength(50)
+                                                        ->placeholder('Home'),
+                                                    TextInput::make('url')
+                                                        ->label('URL')
+                                                        ->required()
+                                                        ->maxLength(255)
+                                                        ->placeholder('/ atau /blog')
+                                                        ->helperText('Gunakan / untuk home, /blog untuk blog, dll'),
+                                                    TextInput::make('order')
+                                                        ->label('Urutan')
+                                                        ->numeric()
+                                                        ->required()
+                                                        ->default(1)
+                                                        ->minValue(1),
+                                                ]),
+                                                Grid::make(3)->schema([
+                                                    Select::make('type')
+                                                        ->label('Tipe Menu')
+                                                        ->options([
+                                                            'link' => 'Link Biasa',
+                                                            'blog_dropdown' => 'Blog dengan Dropdown Kategori',
+                                                        ])
+                                                        ->default('link')
+                                                        ->required()
+                                                        ->helperText('Blog dropdown akan menampilkan kategori sebagai sub-menu'),
+                                                    Select::make('position')
+                                                        ->label('Posisi')
+                                                        ->options([
+                                                            'left' => 'Kiri',
+                                                            'center' => 'Tengah',
+                                                            'right' => 'Kanan',
+                                                        ])
+                                                        ->default('left')
+                                                        ->required()
+                                                        ->helperText('Pilih posisi menu di header'),
+                                                    Toggle::make('show')
+                                                        ->label('Tampilkan')
+                                                        ->default(true),
+                                                ]),
+                                            ])
+                                            ->defaultItems(2)
+                                            ->addActionLabel('Tambah Menu')
+                                            ->collapsible()
+                                            ->reorderable()
+                                            ->orderColumn('order')
+                                            ->itemLabel(fn (array $state): ?string => $state['label'] ?? null),
+                                    ]),
+                            ]),
+
                         Tab::make('Hero Section')
                             ->icon('heroicon-o-star')
                             ->schema([
@@ -276,6 +338,13 @@ class ManageLandingPage extends Page implements HasForms
             $faqs = is_array($decoded) ? $decoded : [];
         }
 
+        // Decode navigation_menus JSON string to array
+        $navigationMenus = [];
+        if (!empty($settings->navigation_menus)) {
+            $decoded = json_decode($settings->navigation_menus, true);
+            $navigationMenus = is_array($decoded) ? $decoded : [];
+        }
+
         return [
             'hero_title' => $settings->hero_title,
             'hero_subtitle' => $settings->hero_subtitle,
@@ -300,6 +369,7 @@ class ManageLandingPage extends Page implements HasForms
             'faq_title' => $settings->faq_title,
             'faq_subtitle' => $settings->faq_subtitle,
             'faqs' => $faqs,
+            'navigation_menus' => $navigationMenus,
         ];
     }
 
@@ -329,6 +399,13 @@ class ManageLandingPage extends Page implements HasForms
             $data['faqs'] = json_encode($data['faqs']);
         } else {
             $data['faqs'] = json_encode([]);
+        }
+
+        // Encode navigation_menus array to JSON string
+        if (isset($data['navigation_menus']) && is_array($data['navigation_menus'])) {
+            $data['navigation_menus'] = json_encode($data['navigation_menus']);
+        } else {
+            $data['navigation_menus'] = json_encode([]);
         }
 
         $settings = app(LandingPageSettings::class);

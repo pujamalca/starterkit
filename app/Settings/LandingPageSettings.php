@@ -39,6 +39,9 @@ class LandingPageSettings extends Settings
     public string $faq_subtitle;
     public string $faqs;
 
+    // Navigation Menu
+    public string $navigation_menus;
+
     public static function group(): string
     {
         return 'landing_page';
