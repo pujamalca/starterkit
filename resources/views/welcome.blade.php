@@ -462,8 +462,13 @@
                                     </svg>
                                 </button>
                                 <div x-show="open"
-                                     x-collapse
-                                     class="px-6 pb-5">
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 transform scale-y-95"
+                                     x-transition:enter-end="opacity-100 transform scale-y-100"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 transform scale-y-100"
+                                     x-transition:leave-end="opacity-0 transform scale-y-95"
+                                     class="px-6 pb-5 origin-top">
                                     <div class="text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
                                         {{ $faq['answer'] }}
                                     </div>

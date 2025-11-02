@@ -54,6 +54,14 @@ class ManageLandingPage extends Page implements HasForms
                         Tab::make('Navigation')
                             ->icon('heroicon-o-bars-3')
                             ->schema([
+                                Section::make('Pengaturan Navigation')
+                                    ->description('Atur fitur yang tampil di navigation header')
+                                    ->schema([
+                                        Toggle::make('show_search')
+                                            ->label('Tampilkan Search')
+                                            ->helperText('Aktifkan untuk menampilkan search box di header')
+                                            ->default(true),
+                                    ])->columns(1),
                                 Section::make('Menu Navigasi')
                                     ->description('Atur menu navigasi yang tampil di header website')
                                     ->schema([
@@ -403,6 +411,7 @@ class ManageLandingPage extends Page implements HasForms
             'faq_subtitle' => $settings->faq_subtitle,
             'faqs' => $faqs,
             'navigation_menus' => $navigationMenus,
+            'show_search' => $settings->show_search,
         ];
     }
 

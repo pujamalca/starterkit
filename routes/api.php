@@ -5,7 +5,41 @@ use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CommentController;
 use App\Http\Controllers\Api\V1\PageController;
 use App\Http\Controllers\Api\V1\PostController;
+use App\Models\Post;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+// Simple search endpoint for landing page
+Route::get('/search', function (Request $request) {
+    $query = $request->get('q', '');
+
+    if (strlen($query) < 2) {
+        return response()->json(['data' => []]);
+    }
+
+    $posts = Post::query()
+        ->where('status', 'published')
+        ->where(function($q) use ($query) {
+            $q->where('title', 'LIKE', "%{$query}%")
+              ->orWhere('excerpt', 'LIKE', "%{$query}%")
+              ->orWhere('content', 'LIKE', "%{$query}%");
+        })
+        ->with('category')
+        ->orderBy('published_at', 'desc')
+        ->limit(10)
+        ->get()
+        ->map(function($post) {
+            return [
+                'slug' => $post->slug,
+                'title' => $post->title,
+                'excerpt' => $post->excerpt,
+                'category' => $post->category->name ?? 'Uncategorized',
+                'date' => $post->published_at?->format('d M Y') ?? '',
+            ];
+        });
+
+    return response()->json(['data' => $posts]);
+})->middleware('throttle:60,1');
 
 Route::prefix('v1')
     ->name('api.v1.')

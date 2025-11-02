@@ -32,6 +32,11 @@
     <!-- Vite Assets -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <!-- Alpine.js x-cloak CSS -->
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 

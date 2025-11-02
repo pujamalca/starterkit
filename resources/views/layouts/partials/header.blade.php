@@ -62,8 +62,7 @@
                                      x-transition:leave="transition ease-in duration-150"
                                      x-transition:leave-start="opacity-100 scale-100"
                                      x-transition:leave-end="opacity-0 scale-95"
-                                     class="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
-                                     style="display: none;">
+                                     class="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                                     <div class="py-2">
                                         <a href="{{ $menu['url'] }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                                             Semua Artikel
@@ -95,8 +94,7 @@
                                      x-transition:leave="transition ease-in duration-150"
                                      x-transition:leave-start="opacity-100 scale-100"
                                      x-transition:leave-end="opacity-0 scale-95"
-                                     class="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
-                                     style="display: none;">
+                                     class="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                                     <div class="py-2">
                                         @foreach($menu['children'] as $child)
                                             @if($child['show'] ?? true)
@@ -144,8 +142,7 @@
                                  x-transition:leave="transition ease-in duration-150"
                                  x-transition:leave-start="opacity-100 scale-100"
                                  x-transition:leave-end="opacity-0 scale-95"
-                                 class="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
-                                 style="display: none;">
+                                 class="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                                 <div class="py-2">
                                     <a href="{{ $menu['url'] }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                                         Semua Artikel
@@ -191,8 +188,7 @@
                                      x-transition:leave="transition ease-in duration-150"
                                      x-transition:leave-start="opacity-100 scale-100"
                                      x-transition:leave-end="opacity-0 scale-95"
-                                     class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
-                                     style="display: none;">
+                                     class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                                     <div class="py-2">
                                         <a href="{{ $menu['url'] }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                                             Semua Artikel
@@ -218,12 +214,17 @@
                 </nav>
 
                 {{-- Search Button --}}
-                <button type="button" class="hidden md:flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                @if($landingSettings->show_search)
+                <button
+                    type="button"
+                    onclick="window.dispatchEvent(new CustomEvent('open-search'))"
+                    class="hidden md:flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer z-10">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                     <span>Search</span>
                 </button>
+                @endif
 
                 {{-- Admin Link --}}
                 <a href="/admin" class="hidden md:inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
@@ -266,8 +267,7 @@
                             </button>
                             <div x-show="openBlog"
                                  x-transition
-                                 class="ml-4 mt-1 space-y-1"
-                                 style="display: none;">
+                                 class="ml-4 mt-1 space-y-1">
                                 <a href="{{ $menu['url'] }}" class="block px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                                     Semua Artikel
                                 </a>
@@ -296,6 +296,19 @@
                 @endforeach
 
                 <div class="border-t border-gray-200 my-2"></div>
+
+                @if($landingSettings->show_search)
+                <button
+                    type="button"
+                    onclick="window.dispatchEvent(new CustomEvent('open-search'))"
+                    class="w-full px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors text-left flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <span>Search</span>
+                </button>
+                @endif
+
                 <a href="/admin" class="px-4 py-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors font-medium">
                     Admin Panel
                 </a>
@@ -303,6 +316,113 @@
         </nav>
     </div>
 </header>
+
+{{-- Search Modal --}}
+@if($landingSettings->show_search)
+<div x-data="{
+    open: false,
+    query: '',
+    results: [],
+    loading: false,
+    async search() {
+        if (this.query.length < 2) {
+            this.results = [];
+            return;
+        }
+        this.loading = true;
+        try {
+            const response = await fetch(`/api/search?q=${encodeURIComponent(this.query)}`);
+            const data = await response.json();
+            this.results = data.data || [];
+        } catch (error) {
+            console.error('Search error:', error);
+            this.results = [];
+        } finally {
+            this.loading = false;
+        }
+    },
+    goToFirst() {
+        if (this.results.length > 0) {
+            window.location.href = '/blog/' + this.results[0].slug;
+        }
+    }
+}"
+@open-search.window="open = true"
+@keydown.escape.window="open = false"
+x-show="open"
+x-cloak
+class="fixed inset-0 z-50 overflow-y-auto backdrop-blur-sm bg-white/10"
+style="display: none;"
+@click="open = false">
+    {{-- Modal Container --}}
+    <div class="flex items-start justify-center min-h-screen pt-20 px-4" @click.stop>
+        <div x-show="open" x-transition class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-200">
+            {{-- Search Input --}}
+            <div class="p-4 border-b border-gray-200">
+                <div class="relative">
+                    <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text"
+                           x-model="query"
+                           @input.debounce.300ms="search()"
+                           @keydown.enter="goToFirst()"
+                           placeholder="Cari artikel..."
+                           class="w-full pl-12 pr-4 py-3 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-lg"
+                           autofocus>
+                    <button @click="open = false" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            {{-- Search Results --}}
+            <div class="max-h-96 overflow-y-auto">
+                {{-- Loading --}}
+                <div x-show="loading" class="p-8 text-center">
+                    <div class="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <p class="mt-4 text-gray-600">Mencari...</p>
+                </div>
+
+                {{-- No Results --}}
+                <div x-show="!loading && query && results.length === 0" class="p-8 text-center">
+                    <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="mt-4 text-gray-600">Tidak ada hasil ditemukan</p>
+                    <p class="mt-2 text-sm text-gray-500">Coba kata kunci lain</p>
+                </div>
+
+                {{-- Results List --}}
+                <div x-show="!loading && results.length > 0" class="divide-y divide-gray-100">
+                    <template x-for="(result, index) in results" :key="result.slug">
+                        <a :href="'/blog/' + result.slug"
+                           class="block p-4 hover:bg-gray-50 transition-colors">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-1" x-text="result.title"></h3>
+                            <p class="text-sm text-gray-600 mb-2 line-clamp-2" x-text="result.excerpt"></p>
+                            <div class="flex items-center gap-4 text-xs text-gray-500">
+                                <span x-text="result.category"></span>
+                                <span>•</span>
+                                <span x-text="result.date"></span>
+                            </div>
+                        </a>
+                    </template>
+                </div>
+
+                {{-- Empty State --}}
+                <div x-show="!loading && !query" class="p-8 text-center text-gray-500">
+                    <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <p class="mt-4">Mulai ketik untuk mencari artikel...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 
 @push('scripts')
 <script>

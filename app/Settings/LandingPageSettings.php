@@ -42,6 +42,7 @@ class LandingPageSettings extends Settings
 
     // Navigation Menu
     public string $navigation_menus;
+    public bool $show_search;
 
     public static function group(): string
     {
