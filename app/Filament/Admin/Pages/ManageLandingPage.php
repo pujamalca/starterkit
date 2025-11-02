@@ -116,6 +116,21 @@ class ManageLandingPage extends Page implements HasForms
                         Tab::make('Hero Section')
                             ->icon('heroicon-o-star')
                             ->schema([
+                                Section::make('Hero Style')
+                                    ->description('Pilih tampilan hero section yang sesuai dengan desain website Anda')
+                                    ->schema([
+                                        Select::make('hero_style')
+                                            ->label('Style Hero')
+                                            ->options([
+                                                'image_right' => 'Image Right - Gambar di sebelah kanan (Default)',
+                                                'full_background' => 'Full Background - Background image penuh dengan overlay',
+                                                'centered_overlay' => 'Centered Overlay - Konten centered dengan background image',
+                                            ])
+                                            ->default('image_right')
+                                            ->required()
+                                            ->helperText('Pilih style tampilan hero section')
+                                            ->live(),
+                                    ]),
                                 Section::make('Hero Content')
                                     ->schema([
                                         TextInput::make('hero_title')
@@ -346,6 +361,7 @@ class ManageLandingPage extends Page implements HasForms
         }
 
         return [
+            'hero_style' => $settings->hero_style,
             'hero_title' => $settings->hero_title,
             'hero_subtitle' => $settings->hero_subtitle,
             'hero_description' => $settings->hero_description,

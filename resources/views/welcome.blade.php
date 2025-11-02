@@ -8,7 +8,17 @@
 @section('meta_description', 'Laravel Starter Kit dengan Filament Admin Panel, RESTful API, Content Management, dan fitur modern untuk mempercepat development aplikasi web Anda.')
 
 @section('content')
-    {{-- Hero Section --}}
+    {{-- Prepare Hero Buttons --}}
+    @php
+        $heroButtons = [];
+        if (!empty($landingSettings->hero_buttons)) {
+            $decoded = json_decode($landingSettings->hero_buttons, true);
+            $heroButtons = is_array($decoded) ? $decoded : [];
+        }
+    @endphp
+
+    {{-- Hero Section - Style image_right --}}
+    @if($landingSettings->hero_style === 'image_right')
     <section class="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white overflow-hidden">
         {{-- Background Pattern --}}
         <div class="absolute inset-0 opacity-10">
@@ -32,15 +42,6 @@
                         {{ $landingSettings->hero_description }}
                     </p>
                     <div class="flex flex-col sm:flex-row items-center md:items-start md:justify-start justify-center gap-4">
-                        @php
-                            // Decode hero_buttons from JSON string
-                            $heroButtons = [];
-                            if (!empty($landingSettings->hero_buttons)) {
-                                $decoded = json_decode($landingSettings->hero_buttons, true);
-                                $heroButtons = is_array($decoded) ? $decoded : [];
-                            }
-                        @endphp
-
                         @foreach($heroButtons as $button)
                             @if($button['style'] === 'primary')
                                 <a href="{{ $button['url'] }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 rounded-lg font-bold hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl">
@@ -100,7 +101,6 @@
                 </div>
             </div>
         </div>
-        </div>
 
         {{-- Wave Divider --}}
         <div class="absolute bottom-0 left-0 right-0">
@@ -109,6 +109,141 @@
             </svg>
         </div>
     </section>
+    @endif
+
+    {{-- Hero Section - Style full_background --}}
+    @if($landingSettings->hero_style === 'full_background')
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {{-- Background Image with Overlay --}}
+        @if($landingSettings->hero_image)
+            <div class="absolute inset-0 z-0">
+                <img src="{{ asset('storage/' . $landingSettings->hero_image) }}"
+                     alt="{{ $landingSettings->hero_title }}"
+                     class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-blue-900/85 to-gray-900/90"></div>
+            </div>
+        @else
+            <div class="absolute inset-0 z-0 bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900"></div>
+        @endif
+
+        {{-- Decorative Elements --}}
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+            <div class="absolute top-40 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+            <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        </div>
+
+        {{-- Content --}}
+        <div class="container mx-auto px-4 py-20 relative z-10">
+            <div class="max-w-4xl mx-auto text-center text-white">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                    {{ $landingSettings->hero_title }}
+                </h1>
+                @if($landingSettings->hero_subtitle)
+                    <h2 class="text-3xl md:text-5xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                        {{ $landingSettings->hero_subtitle }}
+                    </h2>
+                @endif
+                <p class="text-xl md:text-2xl text-gray-300 mb-10 leading-relaxed max-w-3xl mx-auto">
+                    {{ $landingSettings->hero_description }}
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    @foreach($heroButtons as $button)
+                        @if($button['style'] === 'primary')
+                            <a href="{{ $button['url'] }}" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-bold hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 shadow-2xl">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                                {{ $button['text'] }}
+                            </a>
+                        @else
+                            <a href="{{ $button['url'] }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white rounded-lg font-bold hover:bg-white/20 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                                {{ $button['text'] }}
+                            </a>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+        {{-- Scroll Indicator --}}
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+            </svg>
+        </div>
+    </section>
+    @endif
+
+    {{-- Hero Section - Style centered_overlay --}}
+    @if($landingSettings->hero_style === 'centered_overlay')
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-white">
+        {{-- Background Image --}}
+        @if($landingSettings->hero_image)
+            <div class="absolute inset-0 z-0">
+                <img src="{{ asset('storage/' . $landingSettings->hero_image) }}"
+                     alt="{{ $landingSettings->hero_title }}"
+                     class="w-full h-full object-cover opacity-20">
+            </div>
+        @endif
+
+        {{-- Content --}}
+        <div class="container mx-auto px-4 py-20 relative z-10">
+            <div class="max-w-5xl mx-auto">
+                <div class="bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl p-8 md:p-16 border border-gray-200">
+                    <div class="text-center">
+                        <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
+                            {{ $landingSettings->hero_title }}
+                        </h1>
+                        @if($landingSettings->hero_subtitle)
+                            <h2 class="text-2xl md:text-4xl font-semibold mb-6 text-gray-700">
+                                {{ $landingSettings->hero_subtitle }}
+                            </h2>
+                        @endif
+                        <p class="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
+                            {{ $landingSettings->hero_description }}
+                        </p>
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            @foreach($heroButtons as $button)
+                                @if($button['style'] === 'primary')
+                                    <a href="{{ $button['url'] }}" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 shadow-xl">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                        </svg>
+                                        {{ $button['text'] }}
+                                    </a>
+                                @else
+                                    <a href="{{ $button['url'] }}" class="inline-flex items-center gap-2 px-8 py-4 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all border-2 border-gray-300">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                        </svg>
+                                        {{ $button['text'] }}
+                                    </a>
+                                @endif
+                            @endforeach
+                        </div>
+
+                        {{-- Image Preview if exists --}}
+                        @if($landingSettings->hero_image)
+                            <div class="mt-12">
+                                <img src="{{ asset('storage/' . $landingSettings->hero_image) }}"
+                                     alt="{{ $landingSettings->hero_title }}"
+                                     class="rounded-2xl shadow-2xl mx-auto max-w-2xl w-full">
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Decorative gradient circles --}}
+        <div class="absolute top-0 left-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 translate-x-1/2 translate-y-1/2"></div>
+    </section>
+    @endif
 
     {{-- Features Section --}}
     @if($landingSettings->show_features)

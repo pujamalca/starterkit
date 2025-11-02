@@ -7,6 +7,7 @@ use Spatie\LaravelSettings\Settings;
 class LandingPageSettings extends Settings
 {
     // Hero Section
+    public string $hero_style;
     public string $hero_title;
     public string $hero_subtitle;
     public string $hero_description;
