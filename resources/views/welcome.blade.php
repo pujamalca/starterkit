@@ -63,7 +63,7 @@
                 </div>
 
                 {{-- Hero Image --}}
-                <div class="relative">
+                <div class="relative ">
                     @if($landingSettings->hero_image)
                         <div class="relative rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300">
                             <img src="{{ asset('storage/' . $landingSettings->hero_image) }}"

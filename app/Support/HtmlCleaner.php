@@ -34,22 +34,26 @@ class HtmlCleaner
     {
         $config = (new HtmlSanitizerConfig())
             ->allowSafeElements()
-            ->allowElements([
-                'figure', 'figcaption', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'code',
-                'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'blockquote',
-            ])
-            ->allowAttributes(['href', 'title'])->forElement('a')
-            ->allowAttributes(['target', 'rel'])->forElement('a')
             ->allowRelativeLinks()
-            ->requireSafeLinks()
             ->allowLinkSchemes(['http', 'https', 'mailto'])
-            ->forceAttribute('a', 'rel', 'noopener noreferrer')
-            ->allowElements(['img'])
-            ->allowAttributes(['src', 'alt'])->forElement('img')
             ->allowMediaSchemes(['http', 'https', 'data'])
-            ->allowRelativeMedias()
-            ->allowAttributes(['colspan', 'rowspan'])->forElement('td')
-            ->allowAttributes(['colspan', 'rowspan'])->forElement('th')
+            ->allowRelativeMedias();
+
+        foreach ([
+            'figure', 'figcaption', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'code',
+            'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'blockquote',
+        ] as $element) {
+            $config = $config->allowElement($element, '*');
+        }
+
+        $config = $config
+            ->allowElement('img', ['src', 'alt'])
+            ->allowElement('a', '*')
+            ->allowAttribute('target', ['a'])
+            ->allowAttribute('rel', ['a'])
+            ->forceAttribute('a', 'rel', 'noopener noreferrer')
+            ->allowAttribute('colspan', ['td', 'th'])
+            ->allowAttribute('rowspan', ['td', 'th'])
             ->blockElement('iframe')
             ->blockElement('script')
             ->blockElement('style');

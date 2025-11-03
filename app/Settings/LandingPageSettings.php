@@ -44,8 +44,37 @@ class LandingPageSettings extends Settings
     public string $navigation_menus;
     public bool $show_search;
 
+    // Login Page Panel
+    public bool $login_show_panel = true;
+    public ?string $login_panel_logo = null;
+    public string $login_panel_heading = 'Welcome Back!';
+    public string $login_panel_subheading = 'Sign in to access your admin dashboard and manage your application.';
+    public ?string $login_panel_description = null;
+    public string $login_panel_features = '[]';
+    public ?string $login_panel_gradient_from = null;
+    public ?string $login_panel_gradient_to = null;
+    public bool $login_enable_registration = true;
+
     public static function group(): string
     {
         return 'landing_page';
+    }
+
+    public static function defaultLoginFeatures(): array
+    {
+        return [
+            [
+                'title' => 'Secure & Protected',
+                'description' => 'Your data is encrypted and secure',
+            ],
+            [
+                'title' => 'Easy Management',
+                'description' => 'Intuitive admin interface',
+            ],
+            [
+                'title' => '24/7 Access',
+                'description' => 'Manage from anywhere, anytime',
+            ],
+        ];
     }
 }

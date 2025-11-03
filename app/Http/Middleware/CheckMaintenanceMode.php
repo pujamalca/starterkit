@@ -75,6 +75,8 @@ class CheckMaintenanceMode
     protected function matchesAllowedPath(Request $request): bool
     {
         $allowed = [
+            'admin',
+            'admin/*',
             'admin/login',
             'admin/login/*',
             'admin/password/*',
@@ -82,6 +84,8 @@ class CheckMaintenanceMode
             'admin/reset-password/*',
             'livewire/message/filament.admin.pages.auth.login',
             'livewire/message/filament.admin.pages.auth.login/*',
+            'livewire/livewire.js',
+            'livewire/livewire.js/*',
         ];
 
         foreach ($allowed as $pattern) {
@@ -90,7 +94,7 @@ class CheckMaintenanceMode
             }
         }
 
-        if ($request->is('livewire/*') && str_contains($request->path(), 'filament')) {
+        if ($request->is('livewire/*')) {
             return true;
         }
 

@@ -8,6 +8,7 @@ use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use App\Services\DatabaseBackupService;
 use App\Settings\BackupSettings;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -52,6 +53,10 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->withSchedule(function (Schedule $schedule): void {
+        if (! Schema::hasTable('settings')) {
+            return;
+        }
+
         /** @var BackupSettings $settings */
         $settings = app(BackupSettings::class);
 

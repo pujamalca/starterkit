@@ -19,6 +19,8 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Schema as SchemaFacade;
+use Spatie\LaravelSettings\SettingsRepositories\SettingsRepository;
 use BackedEnum;
 use UnitEnum;
 
@@ -42,6 +44,7 @@ class ManageLandingPage extends Page implements HasForms
 
     public function mount(): void
     {
+        $this->ensureLoginSettingsExist();
         $this->form->fill($this->getFormDefaults());
     }
 
@@ -311,6 +314,65 @@ class ManageLandingPage extends Page implements HasForms
                                     ->visible(fn ($get) => $get('show_cta')),
                             ]),
 
+                        Tab::make('Login Page')
+                            ->icon('heroicon-o-lock-closed')
+                            ->schema([
+                                Section::make('Pengaturan Panel Login')
+                                    ->schema([
+                                        Toggle::make('login_show_panel')
+                                            ->label('Tampilkan panel sambutan')
+                                            ->helperText('Panel kiri pada halaman login admin dapat dinonaktifkan bila tidak diperlukan.')
+                                            ->default(true)
+                                            ->live(),
+                                        Toggle::make('login_enable_registration')
+                                            ->label('Tampilkan tombol registrasi')
+                                            ->helperText('Kontrol kemunculan tombol "sign up for an account" di bawah form login.')
+                                            ->default(true),
+                                        ColorPicker::make('login_panel_gradient_from')
+                                            ->label('Warna gradien awal')
+                                            ->helperText('Biarkan kosong untuk mengikuti warna tema.'),
+                                        ColorPicker::make('login_panel_gradient_to')
+                                            ->label('Warna gradien akhir')
+                                            ->helperText('Biarkan kosong untuk mengikuti warna tema.'),
+                                    ])->columns(2),
+                                Section::make('Konten Panel Login')
+                                    ->schema([
+                                        FileUpload::make('login_panel_logo')
+                                            ->label('Logo / ilustrasi')
+                                            ->image()
+                                            ->disk('public')
+                                            ->directory('landing/login')
+                                            ->imageEditor()
+                                            ->visibility('public'),
+                                        TextInput::make('login_panel_heading')
+                                            ->label('Judul panel')
+                                            ->required(),
+                                        Textarea::make('login_panel_subheading')
+                                            ->label('Subjudul')
+                                            ->rows(2)
+                                            ->columnSpanFull(),
+                                        Textarea::make('login_panel_description')
+                                            ->label('Deskripsi tambahan')
+                                            ->rows(3)
+                                            ->columnSpanFull(),
+                                        Repeater::make('login_panel_features')
+                                            ->label('Daftar keunggulan')
+                                            ->schema([
+                                                TextInput::make('title')
+                                                    ->label('Judul')
+                                                    ->required(),
+                                                Textarea::make('description')
+                                                    ->label('Deskripsi')
+                                                    ->rows(2),
+                                            ])
+                                            ->defaultItems(3)
+                                            ->collapsible()
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(2)
+                                    ->visible(fn ($get) => $get('login_show_panel')),
+                            ]),
+
                         Tab::make('FAQ Section')
                             ->icon('heroicon-o-question-mark-circle')
                             ->schema([
@@ -385,6 +447,15 @@ class ManageLandingPage extends Page implements HasForms
             $navigationMenus = is_array($decoded) ? $decoded : [];
         }
 
+        $loginFeatures = [];
+        if (!empty($settings->login_panel_features)) {
+            $decoded = json_decode($settings->login_panel_features, true);
+            $loginFeatures = is_array($decoded) ? $decoded : [];
+        }
+        if (empty($loginFeatures)) {
+            $loginFeatures = LandingPageSettings::defaultLoginFeatures();
+        }
+
         return [
             'hero_style' => $settings->hero_style,
             'hero_title' => $settings->hero_title,
@@ -412,21 +483,39 @@ class ManageLandingPage extends Page implements HasForms
             'faqs' => $faqs,
             'navigation_menus' => $navigationMenus,
             'show_search' => $settings->show_search,
+            'login_show_panel' => $settings->login_show_panel,
+            'login_panel_logo' => $this->sanitizeMediaValue($settings->login_panel_logo),
+            'login_panel_heading' => $settings->login_panel_heading,
+            'login_panel_subheading' => $settings->login_panel_subheading,
+            'login_panel_description' => $settings->login_panel_description,
+            'login_panel_features' => $loginFeatures,
+            'login_panel_gradient_from' => $settings->login_panel_gradient_from,
+            'login_panel_gradient_to' => $settings->login_panel_gradient_to,
+            'login_enable_registration' => $settings->login_enable_registration,
         ];
     }
 
     public function save(): void
     {
+        $this->ensureLoginSettingsExist();
+
         $data = $this->form->getState();
 
         // Sanitize media values
         $data['hero_image'] = $this->sanitizeMediaValue($data['hero_image'] ?? null);
+        $data['login_panel_logo'] = $this->sanitizeMediaValue($data['login_panel_logo'] ?? null);
 
         // Encode features array to JSON string
         if (isset($data['features']) && is_array($data['features'])) {
             $data['features'] = json_encode($data['features']);
         } else {
             $data['features'] = json_encode([]);
+        }
+
+        if (isset($data['login_panel_features']) && is_array($data['login_panel_features'])) {
+            $data['login_panel_features'] = json_encode($data['login_panel_features']);
+        } else {
+            $data['login_panel_features'] = json_encode([]);
         }
 
         // Encode hero_buttons array to JSON string
@@ -449,6 +538,14 @@ class ManageLandingPage extends Page implements HasForms
         } else {
             $data['navigation_menus'] = json_encode([]);
         }
+
+        $data['login_panel_gradient_from'] = blank($data['login_panel_gradient_from'] ?? null)
+            ? null
+            : $data['login_panel_gradient_from'];
+
+        $data['login_panel_gradient_to'] = blank($data['login_panel_gradient_to'] ?? null)
+            ? null
+            : $data['login_panel_gradient_to'];
 
         $settings = app(LandingPageSettings::class);
         $settings->fill($data);
@@ -487,5 +584,35 @@ class ManageLandingPage extends Page implements HasForms
         }
 
         return ltrim($parsedPath, '/');
+    }
+
+    protected function ensureLoginSettingsExist(): void
+    {
+        if (! SchemaFacade::hasTable('settings')) {
+            return;
+        }
+
+        /** @var SettingsRepository $repository */
+        $repository = app(SettingsRepository::class);
+
+        $defaults = [
+            'login_show_panel' => true,
+            'login_panel_logo' => null,
+            'login_panel_heading' => 'Welcome Back!',
+            'login_panel_subheading' => 'Sign in to access your admin dashboard and manage your application.',
+            'login_panel_description' => null,
+            'login_panel_features' => json_encode(LandingPageSettings::defaultLoginFeatures()),
+            'login_panel_gradient_from' => null,
+            'login_panel_gradient_to' => null,
+            'login_enable_registration' => true,
+        ];
+
+        foreach ($defaults as $property => $value) {
+            if ($repository->checkIfPropertyExists('landing_page', $property)) {
+                continue;
+            }
+
+            $repository->createProperty('landing_page', $property, $value);
+        }
     }
 }

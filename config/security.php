@@ -14,9 +14,9 @@ return [
 
     'csp' => env('CSP_POLICY', implode('; ', [
         "default-src 'self'",
-        "script-src 'self' https://cdn.jsdelivr.net",
-        "style-src 'self' https://fonts.googleapis.com",
-        "img-src 'self' data: https:",
+        "script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval'",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "img-src 'self' data: https: blob:",
         "font-src 'self' https://fonts.gstatic.com",
         "connect-src 'self'",
         "worker-src 'self'",

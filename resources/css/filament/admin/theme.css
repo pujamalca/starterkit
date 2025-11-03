@@ -1,3 +1,37 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
 
 @config '../../../../tailwind.config.js';
+
+/* Kustomisasi layout halaman login agar membentang horizontal */
+.fi-simple-layout {
+    min-height: 100vh;
+}
+
+.fi-simple-layout .fi-simple-main-ctn {
+    max-width: none;
+    width: 100%;
+    padding: 0;
+    align-items: stretch;
+}
+
+.fi-simple-layout .fi-simple-main {
+    width: 100%;
+}
+
+:is(.fi-main, .fi-simple-main).fi-width-lg {
+    max-width: var(--container-7xl);
+}
+
+.fi-login-hero {
+    --login-gradient-from: var(--primary-600);
+    --login-gradient-to: var(--primary-800);
+    background-image: linear-gradient(to bottom right, var(--login-gradient-from), var(--login-gradient-to));
+    background-color: var(--login-gradient-from);
+    color: var(--gray-50);
+}
+
+.dark .fi-login-hero {
+    --login-gradient-from: var(--primary-700);
+    --login-gradient-to: var(--primary-900);
+    color: var(--gray-50);
+}
