@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Resources\UserResource;
 use App\Services\UserService;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -60,14 +61,22 @@ class AuthController extends Controller
     public function register(StoreUserRequest $request): JsonResponse
     {
         $user = $this->userService->register($request->validated());
-        $token = $this->userService->createToken($user, 'api-registration');
+        $needsVerification = ($user instanceof MustVerifyEmail) && ! $user->hasVerifiedEmail();
+
+        $meta = [
+            'token' => null,
+            'token_type' => null,
+            'requires_email_verification' => $needsVerification,
+        ];
+
+        if (! $needsVerification) {
+            $meta['token'] = $this->userService->createToken($user, 'api-registration');
+            $meta['token_type'] = 'Bearer';
+        }
 
         return UserResource::make($user->loadMissing('roles'))
             ->additional([
-                'meta' => [
-                    'token' => $token,
-                    'token_type' => 'Bearer',
-                ],
+                'meta' => $meta,
             ])
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);

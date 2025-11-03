@@ -26,45 +26,74 @@ class CheckMaintenanceMode
             return $next($request);
         }
 
+        $payload = [
+            'message' => __('Server sedang dalam mode pemeliharaan. Silakan coba lagi nanti.'),
+        ];
+
         if ($request->expectsJson()) {
-            return response()->json([
-                'message' => __('Server sedang dalam mode pemeliharaan. Silakan coba lagi nanti.'),
-            ], 503);
+            return response()->json($payload, 503);
         }
 
-        return response()->view('maintenance', [
+        return response()->view('maintenance', array_merge($payload, [
             'brandName' => $settings->site_name ?? config('app.name', 'Starter Kit'),
-        ], 503);
+        ]), 503);
     }
 
     protected function shouldBypass(Request $request): bool
     {
         $routeName = $request->route()?->getName();
 
-        if ($routeName && str_starts_with($routeName, 'filament.')) {
+        if ($routeName && in_array($routeName, $this->allowedRouteNames(), true)) {
             return true;
         }
 
-        if (str_starts_with($request->path(), 'admin')) {
-            return true;
-        }
-
-        if ($routeName && str_starts_with($routeName, 'login')) {
-            return true;
-        }
-
-        if (str_starts_with($request->path(), 'login') || str_starts_with($request->path(), 'register') || str_starts_with($request->path(), 'password')) {
-            return true;
-        }
-
-        if (str_starts_with($request->path(), 'livewire') || str_starts_with($request->path(), 'broadcasting')) {
-            return true;
-        }
-
-        if ($request->expectsJson() || $request->ajax()) {
+        if ($this->matchesAllowedPath($request)) {
             return true;
         }
 
         return $request->user()?->can('access-admin-panel') ?? false;
+    }
+
+    protected function allowedRouteNames(): array
+    {
+        return [
+            'login',
+            'logout',
+            'password.request',
+            'password.email',
+            'password.reset',
+            'password.update',
+            'verification.notice',
+            'verification.verify',
+            'verification.resend',
+            'filament.admin.auth.login',
+            'filament.admin.auth.password.request',
+            'filament.admin.auth.password.reset',
+        ];
+    }
+
+    protected function matchesAllowedPath(Request $request): bool
+    {
+        $allowed = [
+            'admin/login',
+            'admin/login/*',
+            'admin/password/*',
+            'admin/forgot-password',
+            'admin/reset-password/*',
+            'livewire/message/filament.admin.pages.auth.login',
+            'livewire/message/filament.admin.pages.auth.login/*',
+        ];
+
+        foreach ($allowed as $pattern) {
+            if ($request->is($pattern)) {
+                return true;
+            }
+        }
+
+        if ($request->is('livewire/*') && str_contains($request->path(), 'filament')) {
+            return true;
+        }
+
+        return false;
     }
 }

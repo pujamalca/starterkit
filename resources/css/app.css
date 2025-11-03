@@ -6,3 +6,7 @@
 @source 'resources/views/**/*.blade.php';
 @source 'resources/js/**/*.js';
 @source 'app/Filament/**/*.php';
+
+[x-cloak] {
+    display: none !important;
+}

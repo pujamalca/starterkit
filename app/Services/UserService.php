@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Notifications\WelcomeNotification;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -55,6 +56,12 @@ class UserService
             ]);
         }
 
+        if ($user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail()) {
+            throw ValidationException::withMessages([
+                'login' => __('Email Anda belum diverifikasi.'),
+            ]);
+        }
+
         if (! Hash::check($password, $user->password)) {
             return null;
         }
@@ -64,6 +71,12 @@ class UserService
 
     public function createToken(User $user, ?string $tokenName = null): string
     {
+        if ($user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail()) {
+            throw ValidationException::withMessages([
+                'login' => __('Email Anda belum diverifikasi.'),
+            ]);
+        }
+
         $name = $tokenName ?: sprintf('api-token-%s', now()->timestamp);
 
         $abilities = [

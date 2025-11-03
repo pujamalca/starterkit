@@ -32,13 +32,13 @@
     <!-- Vite Assets -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Alpine.js x-cloak CSS -->
-    <style>
-        [x-cloak] { display: none !important; }
-    </style>
-
     <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script
+        defer
+        src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"
+        integrity="sha384-iZD2X8o1Zdq0HR5H/7oa8W30WS4No+zWCKUPD7fHRay9I1Gf+C4F8sVmw7zec1wW"
+        crossorigin="anonymous"
+    ></script>
 
     @stack('styles')
 </head>

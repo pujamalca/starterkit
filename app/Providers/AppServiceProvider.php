@@ -13,6 +13,7 @@ use App\Observers\CommentObserver;
 use App\Observers\PostObserver;
 use App\Observers\UserObserver;
 use App\Repositories\PageRepository;
+use App\Support\HtmlCleaner;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -27,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(HtmlCleaner::class, fn () => new HtmlCleaner());
     }
 
     /**

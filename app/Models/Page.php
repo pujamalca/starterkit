@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Traits\SanitizesHtml;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +17,7 @@ class Page extends Model
     use HasFactory;
     use HasSlug;
     use SoftDeletes;
+    use SanitizesHtml;
 
     protected $fillable = [
         'author_id',
@@ -42,6 +45,13 @@ class Page extends Model
         'show_in_header' => 'boolean',
         'show_in_footer' => 'boolean',
     ];
+
+    protected function content(): Attribute
+    {
+        return Attribute::make(
+            set: fn (?string $value) => $this->sanitizeHtml($value),
+        );
+    }
 
     public function getSlugOptions(): SlugOptions
     {
@@ -170,7 +180,6 @@ class Page extends Model
             $formatted .= '</ul>' . "\n";
         }
 
-        return $formatted;
+        return $this->sanitizeHtml($formatted) ?? '';
     }
 }
-

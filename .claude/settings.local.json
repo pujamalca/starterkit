@@ -20,7 +20,8 @@
       "Bash(python:*)",
       "WebSearch",
       "Bash(composer update:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(nul)"
     ],
     "deny": [],
     "ask": []

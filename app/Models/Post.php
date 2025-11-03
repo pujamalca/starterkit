@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Jobs\IncrementPostViewCount;
+use App\Traits\SanitizesHtml;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,6 +27,7 @@ class Post extends Model implements HasMedia
     use SoftDeletes;
     use InteractsWithMedia;
     use LogsActivity;
+    use SanitizesHtml;
 
     protected $fillable = [
         'category_id',
@@ -58,6 +61,22 @@ class Post extends Model implements HasMedia
         'is_featured' => 'boolean',
         'is_sticky' => 'boolean',
     ];
+
+    protected function content(): Attribute
+    {
+        return Attribute::make(
+            set: fn (?string $value) => $this->sanitizeHtml($value),
+        );
+    }
+
+    protected function excerpt(): Attribute
+    {
+        return Attribute::make(
+            set: fn (?string $value) => $value === null
+                ? null
+                : Str::of($value)->stripTags()->squish()->toString(),
+        );
+    }
 
     public function getSlugOptions(): SlugOptions
     {

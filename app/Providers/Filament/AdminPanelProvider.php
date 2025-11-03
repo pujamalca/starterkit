@@ -29,11 +29,10 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        return $panel
+        $panel = $panel
             ->id('admin')
             ->path('admin')
             ->login(\App\Filament\Admin\Pages\Auth\Login::class)
-            ->registration()
             ->passwordReset()
             ->emailVerification()
             ->brandName(fn () => $this->resolveBrandName())
@@ -83,6 +82,12 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
                 'permission:access-admin-panel',
             ]);
+
+        if (app()->environment(['local', 'testing'])) {
+            $panel->registration();
+        }
+
+        return $panel;
     }
 
     protected function resolveBrandName(): string

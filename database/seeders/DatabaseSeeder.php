@@ -18,34 +18,36 @@ class DatabaseSeeder extends Seeder
         $this->call(RolePermissionSeeder::class);
         $this->call(SettingSeeder::class);
 
-        $admin = User::updateOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-                'name' => 'Administrator Sistem',
-                'username' => 'admin',
-                'email_verified_at' => now(),
-                'is_active' => true,
-                'password' => Hash::make('password'),
-            ]
-        );
+        if (app()->environment(['local', 'testing'])) {
+            $admin = User::updateOrCreate(
+                ['email' => 'admin@example.com'],
+                [
+                    'name' => 'Administrator Sistem',
+                    'username' => 'admin',
+                    'email_verified_at' => now(),
+                    'is_active' => true,
+                    'password' => Hash::make('password'),
+                ]
+            );
 
-        if (! $admin->hasRole('Super Admin')) {
-            $admin->assignRole('Super Admin');
-        }
+            if (! $admin->hasRole('Super Admin')) {
+                $admin->assignRole('Super Admin');
+            }
 
-        $editor = User::firstOrCreate(
-            ['email' => 'editor@example.com'],
-            [
-                'name' => 'Editor Konten',
-                'username' => 'editor',
-                'email_verified_at' => now(),
-                'is_active' => true,
-                'password' => Hash::make('password'),
-            ]
-        );
+            $editor = User::firstOrCreate(
+                ['email' => 'editor@example.com'],
+                [
+                    'name' => 'Editor Konten',
+                    'username' => 'editor',
+                    'email_verified_at' => now(),
+                    'is_active' => true,
+                    'password' => Hash::make('password'),
+                ]
+            );
 
-        if (! $editor->hasRole('Content Editor')) {
-            $editor->assignRole('Content Editor');
+            if (! $editor->hasRole('Content Editor')) {
+                $editor->assignRole('Content Editor');
+            }
         }
 
         // Gunakan IndonesianContentSeeder untuk konten berbahasa Indonesia
