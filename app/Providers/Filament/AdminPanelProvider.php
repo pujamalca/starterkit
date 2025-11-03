@@ -32,7 +32,10 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login(\App\Filament\Admin\Pages\Auth\Login::class)
+            ->registration()
+            ->passwordReset()
+            ->emailVerification()
             ->brandName(fn () => $this->resolveBrandName())
             ->brandLogo(fn () => $this->resolveBrandLogo())
             ->brandLogoHeight('2.25rem')

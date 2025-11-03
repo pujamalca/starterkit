@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Users\Tables;
 
 use App\Filament\Exports\UsersExport;
 use App\Filament\Imports\UsersImport;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
@@ -13,6 +14,7 @@ use Filament\Actions\ImportAction;
 use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
@@ -73,6 +75,23 @@ class UsersTable
             ])
             ->recordActions([
                 EditAction::make(),
+                Action::make('verify_email')
+                    ->label('Verify Email')
+                    ->icon('heroicon-o-check-badge')
+                    ->color('success')
+                    ->visible(fn ($record): bool => is_null($record->email_verified_at))
+                    ->requiresConfirmation()
+                    ->modalHeading('Verify Email Address')
+                    ->modalDescription('Are you sure you want to manually verify this user\'s email address?')
+                    ->action(function ($record) {
+                        $record->markEmailAsVerified();
+
+                        Notification::make()
+                            ->success()
+                            ->title('Email Verified')
+                            ->body('The email address has been verified successfully.')
+                            ->send();
+                    }),
             ])
             ->headerActions([
                 ImportAction::make()
