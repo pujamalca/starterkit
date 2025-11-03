@@ -10,6 +10,7 @@ use App\Filament\Admin\Resources\Permissions\Tables\PermissionsTable;
 use App\Models\Permission;
 use BackedEnum;
 use Filament\Resources\Resource;
+use UnitEnum;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -20,6 +21,8 @@ class PermissionResource extends Resource
     protected static ?string $model = Permission::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLockClosed;
+
+    protected static UnitEnum|string|null $navigationGroup = 'Sistem';
 
     protected static ?string $navigationLabel = 'Permissions';
 

@@ -8,9 +8,11 @@ use App\Models\Activity;
 use App\Models\Comment;
 use App\Models\Page;
 use App\Models\Post;
+USE App\Models\Tag;
 use App\Models\User;
 use App\Observers\CommentObserver;
 use App\Observers\PostObserver;
+use App\Observers\TagObserver;
 use App\Observers\UserObserver;
 use App\Repositories\PageRepository;
 use App\Support\HtmlCleaner;
@@ -40,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
         Post::observe(PostObserver::class);
         User::observe(UserObserver::class);
         Comment::observe(CommentObserver::class);
+        Tag::observe(TagObserver::class);
 
         RateLimiter::for('public-content', function (Request $request) {
             return [
@@ -116,3 +119,4 @@ class AppServiceProvider extends ServiceProvider
         Livewire::component('filament.admin.widgets.analytics-trends-chart', AnalyticsTrendsChart::class);
     }
 }
+

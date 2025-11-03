@@ -10,6 +10,7 @@ use App\Filament\Admin\Resources\Users\Tables\UsersTable;
 use App\Models\User;
 use BackedEnum;
 use Filament\Resources\Resource;
+use UnitEnum;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -22,6 +23,8 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUser;
+
+    protected static UnitEnum|string|null $navigationGroup = 'Sistem';
 
     protected static ?string $recordTitleAttribute = 'name';
 

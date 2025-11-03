@@ -10,6 +10,7 @@ use App\Filament\Admin\Resources\Roles\Tables\RolesTable;
 use App\Models\Role;
 use BackedEnum;
 use Filament\Resources\Resource;
+use UnitEnum;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -20,6 +21,8 @@ class RoleResource extends Resource
     protected static ?string $model = Role::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedKey;
+
+    protected static UnitEnum|string|null $navigationGroup = 'Sistem';
 
     protected static ?string $navigationLabel = 'Roles';
 
